@@ -46,13 +46,36 @@ ESP32 kartınız ile LoRa modülünü aşağıdaki tabloya bakarak jumper kablol
 
 ---
 
-## 🚀 1. Bölüm: Yazılımın ESP32 Kartına Yüklenmesi
+## 🚀 1. Bölüm: Yazılımı Kart Yükleme (Windows & Linux)
 
+### 🪟 Yöntem A: Windows (VS Code & PlatformIO ile)
 1. Bilgisayarınıza **VS Code** programını ve içine **PlatformIO** eklentisini kurun.
 2. Bu projeyi **ZIP** olarak indirip klasöre çıkarın ve VS Code ile açın (`File -> Open Folder`).
 3. ESP32 kartınızı USB kablosuyla bilgisayara bağlayın.
 4. VS Code'un en altındaki mavi çubukta yer alan **`➔` (Upload)** butonuna basın.
-5. Yazılım karta yüklenecek ve frekans ayarları (`433.325 MHz`) otomatik yapılacaktır.
+
+---
+
+### 🐧 Yöntem B: Linux / Debian / Raspberry Pi (Terminal Üzerinden Doğrudan Yükleme)
+
+Linux kullanıcıları VS Code kurmadan **doğrudan terminalden 2 komutla** yazılımı ESP32 kartına yükleyebilir:
+
+#### 1. PlatformIO CLI Kurun ve Projeyi Çekin:
+```bash
+# PlatformIO aracını kurun
+pip install platformio
+
+# Projeyi indirin
+git clone https://github.com/huseyinedepali77/DIY-RNode-ESP32-LoRa.git
+cd DIY-RNode-ESP32-LoRa
+```
+
+#### 2. Karta Yükleyin:
+ESP32 kartınızı USB ile bağlayıp şu tek komutu çalıştırın:
+```bash
+pio run -t upload
+```
+> Yükleme otomatik tamamlanacak, EEPROM parametreleri (`433.325 MHz`) ve MD5 imzalama kart açılır açılmaz kendiliğinden konfigüre edilecektir!
 
 ---
 
@@ -71,10 +94,8 @@ Cihazı bilgisayara bağladıktan sonra NomadNet/Reticulum uygulamasının cihaz
 
 #### 2. Config Dosyasını Açın:
 - `Windows Tuşu + R` basarak **Çalıştır** penceresini açın.
-- Şu adresi yapıştırıp Enter'a basın:  
-  `%USERPROFILE%\.reticulum`
-- Klasördeki **`config`** dosyasını Not Defteri (Notepad) ile açın.  
-  *(Veya dosya yolu: `C:\Users\KullanıcıAdınız\.reticulum\config`)*
+- Şu adresi yapıştırıp Enter'a basın: `%USERPROFILE%\.reticulum`
+- Klasördeki **`config`** dosyasını Not Defteri ile açın. *(Veya adres: `C:\Users\KullanıcıAdınız\.reticulum\config`)*
 
 #### 3. Ayarları Yapıştırın:
 Dosya içindeki `[interfaces]` başlığının altına şu satırları ekleyin:
@@ -92,21 +113,17 @@ Dosya içindeki `[interfaces]` başlığının altına şu satırları ekleyin:
   codingrate = 5
   flow_control = False
 ```
-*(⚠️ **Dikkat:** `port = COM3` kısmındaki `COM3` yerine Aygıt Yöneticisi'nde kendi bulduğunuz COM numarasını yazın).*
+*(⚠️ `port = COM3` yerine kendi COM portunuzu yazın).*
 
 ---
 
 ### 🐧 B. LINUX / DEBIAN / RASPBERRY PI KULLANICILARI İÇİN:
 
 #### 1. Portunuzu Bulun:
-- Terminali açın ve şu komutu yazın:
-  ```bash
-  ls /dev/ttyUSB* /dev/ttyACM*
-  ```
+- Terminali açın ve yazın: `ls /dev/ttyUSB* /dev/ttyACM*`
 - Çıkan yazı sizin port adınızdır (Örneğin: `/dev/ttyUSB0`).
 
-> 💡 **Erişim Engeli (Permission Denied) Alırsanız:**  
-> Terminale şu satırı yazarak izni açın: `sudo chmod 666 /dev/ttyUSB0`
+> 💡 **Erişim Engeli (Permission Denied) Alırsanız:** `sudo chmod 666 /dev/ttyUSB0`
 
 #### 2. Config Dosyasını Açın ve Yapıştırın:
 - Terminalde: `nano ~/.reticulum/config`
@@ -148,14 +165,8 @@ Ayardaki `txpower = 14` satırı, cihazın **Radyo Çıkış Gücünü (Sinyal Y
 ## 🎯 3. Bölüm: Çalıştırma ve Test
 
 1. **Cihaz Durumunu Kontrol Edin:**
-   - Windows (Komut Satırı / PowerShell):
-     ```cmd
-     rnodeconf COM3 --info
-     ```
-   - Linux (Terminal):
-     ```bash
-     rnodeconf /dev/ttyUSB0 --info
-     ```
+   - Windows: `rnodeconf COM3 --info`
+   - Linux: `rnodeconf /dev/ttyUSB0 --info`
    *Ekranda `EEPROM checksum correct` yazıyorsa cihazınız tam doğrulama almıştır.*
 
 2. **NomadNet Uygulamasını Başlatın:**
