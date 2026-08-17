@@ -4,6 +4,7 @@ import http.server
 import socketserver
 import json
 import os
+import re
 
 try:
     from RNS.Utilities.rngit.util import MarkdownToMicron
@@ -17,6 +18,17 @@ DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 NOMADNET_PAGES_DIR = os.path.expanduser("~/.nomadnetwork/storage/pages")
 if not os.path.exists(os.path.expanduser("~/.nomadnetwork")):
     NOMADNET_PAGES_DIR = os.path.expanduser("~/.nomadnet/storage/pages")
+
+def sanitize_links(text):
+    if not text: return text
+    def clean_link(match):
+        label = match.group(1).strip()
+        url = match.group(2).strip()
+        if url.startswith(":/page/"): url = url[7:]
+        elif url.startswith("/page/"): url = url[6:]
+        elif url.startswith("page://"): url = url[7:]
+        return f"[{label}]({url})"
+    return re.sub(r'\[\s*([^\]]+?)\s*\]\(([^)]+)\)', clean_link, text)
 
 class ReuseTCPServer(socketserver.TCPServer):
     allow_reuse_address = True
@@ -59,24 +71,27 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 data = json.loads(post_data.decode('utf-8'))
                 filename = data.get('filename', 'index.mu')
-                content = data.get('content', '')
+                raw_content = data.get('content', '')
 
                 if not filename.endswith('.mu'):
                     filename += '.mu'
 
+                # Automatically sanitize markdown link syntax
+                clean_content = sanitize_links(raw_content)
+
                 # Save clean markdown source
                 src_path = os.path.join(NOMADNET_PAGES_DIR, filename + ".src")
                 with open(src_path, 'w', encoding='utf-8') as f:
-                    f.write(content)
+                    f.write(clean_content)
 
                 if HAS_CONVERTER:
                     try:
                         converter = MarkdownToMicron()
-                        final_content = converter.format_block(content)
+                        final_content = converter.format_block(clean_content)
                     except Exception:
-                        final_content = content
+                        final_content = clean_content
                 else:
-                    final_content = content
+                    final_content = clean_content
 
                 os.makedirs(NOMADNET_PAGES_DIR, exist_ok=True)
                 target_path = os.path.join(NOMADNET_PAGES_DIR, filename)
@@ -90,7 +105,7 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
                 with open(os.path.join(alt_dir, filename), 'w', encoding='utf-8') as f:
                     f.write(final_content)
                 with open(os.path.join(alt_dir, filename + ".src"), 'w', encoding='utf-8') as f:
-                    f.write(content)
+                    f.write(clean_content)
 
                 response = {
                     "status": "success",
