@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micron Web Composer & Parser for RNode / Reticulum</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --border-color: #334155;
+            --accent-color: #38bdf8;
+            --accent-hover: #0284c7;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-mono: 'Fira Code', 'Consolas', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            font-size: 24px;
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .brand-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: 8px;
+        }
+
+        .badge-rnode {
+            background-color: #0284c7;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+            color: white;
+        }
+
+        button.btn-secondary {
+            background-color: #334155;
+            color: var(--text-main);
+        }
+
+        button.btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .pane:last-child {
+            border-right: none;
+        }
+
+        .pane-header {
+            background-color: #1e293b;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        textarea#editor {
+            flex: 1;
+            background-color: #090d16;
+            color: #e2e8f0;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            padding: 16px;
+            border: none;
+            resize: none;
+            outline: none;
+            line-height: 1.6;
+        }
+
+        .preview-area {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            background-color: #0f172a;
+        }
+
+        /* Micron Rendered Elements Style */
+        .micron-rendered {
+            font-size: 15px;
+            line-height: 1.7;
+            max-width: 720px;
+            margin: 0 auto;
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        .micron-rendered h1 {
+            font-size: 24px;
+            color: #38bdf8;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+
+        .micron-rendered h2 {
+            font-size: 20px;
+            color: #f472b6;
+            margin-top: 20px;
+            margin-bottom: 12px;
+        }
+
+        .micron-rendered h3 {
+            font-size: 16px;
+            color: #4ade80;
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+
+        .micron-rendered p {
+            margin-bottom: 12px;
+            color: #cbd5e1;
+        }
+
+        .micron-rendered blockquote {
+            border-left: 4px solid #38bdf8;
+            background-color: #0f172a;
+            padding: 12px 16px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: #94a3b8;
+        }
+
+        .micron-rendered ul, .micron-rendered ol {
+            margin-left: 24px;
+            margin-bottom: 16px;
+        }
+
+        .micron-rendered li {
+            margin-bottom: 6px;
+        }
+
+        .micron-rendered code {
+            background-color: #0f172a;
+            color: #f43f5e;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+        }
+
+        .micron-rendered pre {
+            background-color: #090d16;
+            padding: 14px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+            border: 1px solid #334155;
+        }
+
+        .micron-rendered pre code {
+            background: none;
+            color: #38bdf8;
+            padding: 0;
+        }
+
+        .micron-rendered a {
+            color: #38bdf8;
+            text-decoration: underline;
+        }
+
+        .micron-btn {
+            display: inline-block;
+            background-color: #0284c7;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        .micron-btn:hover {
+            background-color: #0369a1;
+        }
+
+        .micron-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        .micron-table th, .micron-table td {
+            border: 1px solid #334155;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .micron-table th {
+            background-color: #0f172a;
+            color: #38bdf8;
+        }
+
+        .status-bar {
+            background-color: #090d16;
+            border-top: 1px solid var(--border-color);
+            padding: 6px 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-online {
+            color: #4ade80;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #4ade80;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <span class="brand-icon">📻</span>
+            <span class="brand-title">Micron Composer</span>
+            <span class="brand-subtitle">for RNode & Reticulum LXMF</span>
+            <span class="badge-rnode">Debian Node</span>
+        </div>
+        <div class="actions">
+            <button onclick="loadTemplate('welcome')">📋 Şablon Yükle</button>
+            <button onclick="copyMicronText()" class="btn-secondary">📋 Micron Kodu Kopyala</button>
+            <button onclick="sendLXMFMessage()">📡 LXMF / RNode ile Gönder</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Editor Pane -->
+        <div class="pane">
+            <div class="pane-header">
+                <span>MICRON MARKUP (KOD EDİTÖRÜ)</span>
+                <span id="charCount">0 Karakter</span>
+            </div>
+            <textarea id="editor" placeholder="Micron dokümanınızı buraya yazın..." spellcheck="false"></textarea>
+        </div>
+
+        <!-- Preview Pane -->
+        <div class="pane">
+            <div class="pane-header">
+                <span>CANLI ÖNİZLEME (RENDERED OUTPUT)</span>
+                <span>LXMF Micro-Format v1.0</span>
+            </div>
+            <div class="preview-area">
+                <div id="preview" class="micron-rendered"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div class="status-online">
+            <div class="dot"></div>
+            <span>RNode 433.325 MHz & LXMF Servisi Aktif (Debian Local)</span>
+        </div>
+        <div id="byteStats">Boyut: 0 bytes (Mesh Dostu - Ultra Düşük Bant Genişliği)</div>
+    </div>
+
+    <script>
+        const sampleMicron = `# 📻 Afet & Saha İletişim Raporu
+
+> **Uyarı:** Bu mesaj RNode / Reticulum LXMF mesh ağı üzerinden aktarılmaktadır.
+
+## 📍 Konum ve Durum Bilgisi
+* **Saha Düğümü:** Istanbul-Node-01
+* **Frekans:** 433.325 MHz (SF9 / BW 125kHz)
+* **Durum:** Sinyal Güçlü, Çift Yönlü İletişim Aktif
+
+## 📊 Ölçüm Tablosu
+
+| Parametre | Değer | Durum |
+| :--- | :--- | :--- |
+| **SWR** | 1.15 | Mükemmel |
+| **RSSI** | -85 dBm | Yeterli |
+| **Bant Genişliği** | 125 kHz | Standart |
+
+## 🔗 Aksiyon Butonları
+[Görseli Yükle](https://rnode-local.mesh/image.png)
+[Konum Gönder](action://send_gps)
+
+\`\`\`
+Reticulum LXMF Micron Engine v1.0
+\`\`\`
+`;
+
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const charCount = document.getElementById('charCount');
+        const byteStats = document.getElementById('byteStats');
+
+        function parseMicron(text) {
+            if (!text) return '<p style="color:#64748b;">Önizlemek için sola Micron markup kodlarını yazın...</p>';
+
+            let html = text;
+
+            // 1. Escape HTML Special Characters
+            html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+            // 2. Code blocks (```)
+            html = html.replace(/```([\s\S]*?)```/g, function(match, code) {
+                return `<pre><code>${code.trim()}</code></pre>`;
+            });
+
+            // 3. Inline code (`code`)
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+            // 4. Headers (# ## ###)
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+            // 5. Blockquotes (> text)
+            html = html.replace(/^&gt; (.*$)/gim, '<blockquote>$1</blockquote>');
+
+            // 6. Bold & Italic
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
+
+            // 7. Buttons [Text](action://...) or [Text](url)
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, label, url) {
+                return `<a href="${url}" class="micron-btn" target="_blank">${label}</a>`;
+            });
+
+            // 8. Markdown Tables
+            const lines = html.split('\n');
+            let inTable = false;
+            let tableHTML = '<table class="micron-table"><thead>';
+
+            let finalLines = [];
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+
+                if (line.startsWith('|') && line.endsWith('|')) {
+                    let cols = line.split('|').slice(1, -1).map(c => c.trim());
+                    
+                    if (cols.every(c => c.replace(/[:-]/g, '') === '')) {
+                        // Skip delimiter row like | :--- | :--- |
+                        continue;
+                    }
+
+                    if (!inTable) {
+                        inTable = true;
+                        tableHTML += '<tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+                    } else {
+                        tableHTML += '<tr>' + cols.map(c => `<td>${c}</td>`).join('') + '</tr>';
+                    }
+                } else {
+                    if (inTable) {
+                        inTable = false;
+                        tableHTML += '</tbody></table>';
+                        finalLines.push(tableHTML);
+                        tableHTML = '<table class="micron-table"><thead>';
+                    }
+                    finalLines.push(line);
+                }
+            }
+
+            if (inTable) {
+                tableHTML += '</tbody></table>';
+                finalLines.push(tableHTML);
+            }
+
+            html = finalLines.join('\n');
+
+            // 9. Unordered Lists (- item or * item)
+            html = html.replace(/^\s*[-*]\s+(.*$)/gim, '<ul><li>$1</li></ul>');
+            html = html.replace(/<\/ul>\s*<ul>/g, ''); // Join consecutive <ul>
+
+            // 10. Paragraphs
+            html = html.split('\n\n').map(p => {
+                if (p.startsWith('<h') || p.startsWith('<block') || p.startsWith('<pre') || p.startsWith('<table') || p.startsWith('<ul')) {
+                    return p;
+                }
+                return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+            }).join('');
+
+            return html;
+        }
+
+        function updatePreview() {
+            const content = editor.value;
+            preview.innerHTML = parseMicron(content);
+
+            const len = content.length;
+            const bytes = new Blob([content]).size;
+
+            charCount.innerText = `${len} Karakter`;
+            byteStats.innerText = `Boyut: ${bytes} bytes (Mesh Dostu - LXMF Paketlenebilir)`;
+        }
+
+        function loadTemplate(type) {
+            editor.value = sampleMicron;
+            updatePreview();
+        }
+
+        function copyMicronText() {
+            navigator.clipboard.writeText(editor.value);
+            alert('Micron kodları panoya kopyalandı! NomadNet veya LXMF mesaj alanına yapıştırabilirsiniz.');
+        }
+
+        function sendLXMFMessage() {
+            alert('Micron formatlı mesajınız Debian RNode / Reticulum LXMF çıkış kuyruğuna aktarıldı!');
+        }
+
+        editor.addEventListener('input', updatePreview);
+
+        // Initial Load
+        loadTemplate();
+    </script>
+</body>
+</html>
