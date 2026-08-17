@@ -269,81 +269,7 @@
     <div id="toast"></div>
 
     <script>
-        const pagesData = {
-            "index.mu": `# Çınarcık Mesh Düğümü - Ana Sayfa
-
-> **Hoş Geldiniz!** -TA2LRW Hüseyin- Bu sayfa Çınarcık / Yalova RNode LoRa Mesh ağı üzerinden 433.325 MHz frekansında yayın yapmaktadır.
-
-## Sayfa Menüsü
-Aşağıdaki bağlantılara tıklayarak sayfalar arasında gezinebilirsiniz:
-
-[1. Hakkımda ve Düğüm Bilgileri](about.mu)
-[2. Amatör Telsizcilik & Frekans Rehberi](hamradio.mu)
-[3. Acil Durum & Hayatta Kalma Rehberi](survival.mu)
-
----
-\`\`\`
-Düğüm Konumu: KN40NP Çınarcık / Yalova (24/7 Kesintisiz)
-Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
-\`\`\``,
-
-            "about.mu": `# Hakkımda & Çınarcık Düğüm Bilgileri
-
-> **Amatör Telsiz & Off-Grid Çınarcık İletişim İstasyonu**
-
-## QTH ve Konum Bilgileri
-* **Çağrı Kodu:** TA2LRW
-* **Operatör:** Hüseyin
-* **Bölge:** Yalova / Çınarcık (KN40NP)
-* **Düğüm Kimliği:** RNode-Cinarcik-Server
-
-## Donanım Detayları
-
-| Donanım | Özellik |
-| :--- | :--- |
-| **Ana Sunucu** | Debian Linux (24/7 Kesintisiz) |
-| **RTM / RNode** | ESP32 + SX1278 (433.325 MHz) |
-| **Anten** | 3m UHF/VHF Yüksek Kazançlı Anten |
-
-[Ana Sayfaya Dön](index.mu)`,
-
-            "hamradio.mu": `# Amatör Telsizcilik & Frekans Rehberi
-
-> **"Amatör Telsizcilik, Afet Anında Tek Kesintisiz İletişim Hattıdır."**
-
-## Çınarcık LoRa RNode Ağ Parametreleri
-
-* **Çalışma Frekansı:** 433.325 MHz (ISM Bandı)
-* **Spreading Factor (SF):** SF9
-* **Bant Genişliği (BW):** 125 kHz
-* **Coding Rate (CR):** 4/5
-* **Yayın Gücü (TX Power):** 14 dBm (25 mW)
-
-## Sık Kullanılan Q-Kodları
-
-| Kod | Anlamı |
-| :--- | :--- |
-| **QTH** | Bulunduğum konum / İstasyona olan konum |
-| **QSO** | Birebir telsiz görüşmesi yapma |
-| **QRM** | İnsan kaynaklı parazit / gürültü |
-
-[Ana Sayfaya Dön](index.mu)`,
-
-            "survival.mu": `# Acil Durum & Hayatta Kalma Rehberi
-
-> **İnternet veya GSM Kesildiğinde Uygulanacak Adımlar**
-
-## 1. Su Arıtma ve Hijyen
-* **Kaynatma:** Suyu en az 3 dakika boyunca fokurdayacak şekilde kaynatın.
-
-## 2. Acil Durum Çantası Kontrol Listesi
-- [x] RNode LoRa Telsiz Cihazı & Powerbank
-- [x] Düdük ve El Feneri
-- [x] İlk Yardım Çantası & İlaçlar
-
-[Ana Sayfaya Dön](index.mu)`
-        };
-
+        let pagesData = {};
         let currentFilename = "index.mu";
 
         const editor = document.getElementById('editor');
@@ -353,6 +279,34 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
         const activeFilenameLabel = document.getElementById('activeFilename');
         const tuiCurrentFile = document.getElementById('tuiCurrentFile');
         const tabsList = document.getElementById('tabsList');
+
+        async function loadServerPages() {
+            try {
+                const response = await fetch('/api/pages');
+                const result = await response.json();
+                if (result.pages && Object.keys(result.pages).length > 0) {
+                    pagesData = result.pages;
+                } else {
+                    initDefaultPages();
+                }
+            } catch (err) {
+                initDefaultPages();
+            }
+            
+            if (!pagesData[currentFilename]) {
+                currentFilename = Object.keys(pagesData)[0] || "index.mu";
+            }
+            switchPage(currentFilename);
+        }
+
+        function initDefaultPages() {
+            pagesData = {
+                "index.mu": `# Çınarcık Mesh Düğümü - Ana Sayfa\n\n> **Hoş Geldiniz!** -TA2LRW Hüseyin- Bu sayfa Çınarcık / Yalova RNode LoRa Mesh ağı üzerinden 433.325 MHz frekansında yayın yapmaktadır.\n\n## Sayfa Menüsü\nAşağıdaki bağlantılara tıklayarak sayfalar arasında gezinebilirsiniz:\n\n[1. Hakkımda ve Düğüm Bilgileri](about.mu)\n[2. Amatör Telsizcilik & Frekans Rehberi](hamradio.mu)\n[3. Acil Durum & Hayatta Kalma Rehberi](survival.mu)\n\n---\n\`\`\`\nDüğüm Konumu: KN40NP Çınarcık / Yalova (24/7 Kesintisiz)\nFrekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)\n\`\`\``,
+                "about.mu": `# Hakkımda & Çınarcık Düğüm Bilgileri\n\n> **Amatör Telsiz & Off-Grid Çınarcık İletişim İstasyonu**\n\n## QTH ve Konum Bilgileri\n* **Çağrı Kodu:** TA2LRW\n* **Operatör:** Hüseyin\n* **Bölge:** Yalova / Çınarcık (KN40NP)\n* **Düğüm Kimliği:** RNode-Cinarcik-Server\n\n## Donanım Detayları\n\n| Donanım | Özellik |\n| :--- | :--- |\n| **Ana Sunucu** | Debian Linux (24/7 Kesintisiz) |\n| **RTM / RNode** | ESP32 + SX1278 (433.325 MHz) |\n| **Anten** | 3m UHF/VHF Yüksek Kazançlı Anten |\n\n[Ana Sayfaya Dön](index.mu)`,
+                "hamradio.mu": `# Amatör Telsizcilik & Frekans Rehberi\n\n> **"Amatör Telsizcilik, Afet Anında Tek Kesintisiz İletişim Hattıdır."**\n\n## Çınarcık LoRa RNode Ağ Parametreleri\n\n* **Çalışma Frekansı:** 433.325 MHz (ISM Bandı)\n* **Spreading Factor (SF):** SF9\n* **Bant Genişliği (BW):** 125 kHz\n* **Coding Rate (CR):** 4/5\n* **Yayın Gücü (TX Power):** 14 dBm (25 mW)\n\n## Sık Kullanılan Q-Kodları\n\n| Kod | Anlamı |\n| :--- | :--- |\n| **QTH** | Bulunduğum konum / İstasyona olan konum |\n| **QSO** | Birebir telsiz görüşmesi yapma |\n| **QRM** | İnsan kaynaklı parazit / gürültü |\n\n[Ana Sayfaya Dön](index.mu)`,
+                "survival.mu": `# Acil Durum & Hayatta Kalma Rehberi\n\n> **İnternet veya GSM Kesildiğinde Uygulanacak Adımlar**\n\n## 1. Su Arıtma ve Hijyen\n* **Kaynatma:** Suyu en az 3 dakika boyunca fokurdayacak şekilde kaynatın.\n\n## 2. Acil Durum Çantası Kontrol Listesi\n- [x] RNode LoRa Telsiz Cihazı & Powerbank\n- [x] Düdük ve El Feneri\n- [x] İlk Yardım Çantası & İlaçlar\n\n[Ana Sayfaya Dön](index.mu)`
+            };
+        }
 
         function renderTabs() {
             tabsList.innerHTML = "";
@@ -382,13 +336,20 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
             switchPage(name);
         }
 
-        function deleteActivePage() {
+        async function deleteActivePage() {
             if (currentFilename === "index.mu") {
                 alert("Ana sayfa (index.mu) silinemez!");
                 return;
             }
 
             if (confirm(`'${currentFilename}' sayfasını silmek istediğinizden emin misiniz?`)) {
+                try {
+                    await fetch('/api/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ filename: currentFilename })
+                    });
+                } catch(e){}
                 delete pagesData[currentFilename];
                 switchPage("index.mu");
             }
@@ -470,6 +431,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 
                 if (response.ok) {
                     showToast(`'${currentFilename}' klasore kaydedildi!`);
+                    await loadServerPages();
                 } else {
                     showToast(`Hata: ${result.message}`);
                 }
@@ -486,7 +448,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
         }
 
         editor.addEventListener('input', updatePreview);
-        switchPage('index.mu');
+        window.addEventListener('DOMContentLoaded', loadServerPages);
     </script>
 </body>
 </html>

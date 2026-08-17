@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Safe Micron File Publisher for Reticulum / NomadNet
+# Safe Micron File Publisher & Persistent Server for Reticulum / NomadNet
 import http.server
 import socketserver
 import json
@@ -25,6 +25,26 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
 
+    def do_GET(self):
+        if self.path == '/api/pages':
+            pages_data = {}
+            os.makedirs(NOMADNET_PAGES_DIR, exist_ok=True)
+            try:
+                for fname in os.listdir(NOMADNET_PAGES_DIR):
+                    if fname.endswith('.mu'):
+                        fpath = os.path.join(NOMADNET_PAGES_DIR, fname)
+                        with open(fpath, 'r', encoding='utf-8', errors='replace') as f:
+                            pages_data[fname] = f.read()
+            except Exception as e:
+                pages_data = {"error": str(e)}
+
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"pages": pages_data}).encode('utf-8'))
+        else:
+            super().do_GET()
+
     def do_POST(self):
         if self.path == '/api/publish':
             content_length = int(self.headers['Content-Length'])
@@ -39,8 +59,11 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
                     filename += '.mu'
 
                 if HAS_CONVERTER:
-                    converter = MarkdownToMicron()
-                    final_content = converter.format_block(content)
+                    try:
+                        converter = MarkdownToMicron()
+                        final_content = converter.format_block(content)
+                    except Exception:
+                        final_content = content
                 else:
                     final_content = content
 
@@ -72,6 +95,28 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(response).encode('utf-8'))
+
+        elif self.path == '/api/delete':
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            try:
+                data = json.loads(post_data.decode('utf-8'))
+                filename = data.get('filename', '')
+
+                if filename and filename != 'index.mu':
+                    p1 = os.path.join(NOMADNET_PAGES_DIR, filename)
+                    p2 = os.path.join(os.path.expanduser("~/.nomadnet/storage/pages"), filename)
+                    if os.path.exists(p1): os.remove(p1)
+                    if os.path.exists(p2): os.remove(p2)
+
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "success"}).encode('utf-8'))
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+
         else:
             self.send_error(404, "Endpoint not found")
 
