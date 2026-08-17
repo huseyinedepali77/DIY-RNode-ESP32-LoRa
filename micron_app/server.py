@@ -37,14 +37,14 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
 
                 response = {
                     "status": "success",
-                    "message": f"'{filename}' sayfası Çınarcık RNode LoRa ağında başarıyla yayınlandı!",
+                    "message": f"'{filename}' sayfasi Cinarcik RNode aginda basariyla yayinlandi!",
                     "path": target_path
                 }
                 self.send_response(200)
             except Exception as e:
                 response = {
                     "status": "error",
-                    "message": f"Yayınlama hatası: {str(e)}"
+                    "message": f"Yayinlama hatasi: {str(e)}"
                 }
                 self.send_response(500)
 
@@ -69,15 +69,15 @@ if __name__ == "__main__":
 
     if httpd:
         print(f"==================================================")
-        print(f"📻 Çınarcık RNode Micron Publisher Server (Debian)")
+        print(f"Cinarcik RNode Micron Publisher Server (Debian)")
         print(f"==================================================")
-        print(f"Web Editör: http://localhost:{server_port}")
-        print(f"Yerel Ağ Erişimi: http://0.0.0.0:{server_port}")
-        print(f"NomadNet Yayın Dizin: {NOMADNET_PAGES_DIR}")
+        print(f"Web Editor: http://localhost:{server_port}")
+        print(f"Yerel Ag Erisimi: http://0.0.0.0:{server_port}")
+        print(f"NomadNet Yayin Dizin: {NOMADNET_PAGES_DIR}")
         print(f"==================================================")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
             print("\nSunucu durduruldu.")
     else:
-        print("Hata: Uygun port bulunamadı.")
+        print("Hata: Uygun port bulunamadi.")

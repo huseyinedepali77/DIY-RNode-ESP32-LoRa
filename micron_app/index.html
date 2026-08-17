@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Çınarcık RNode Micron Page Studio & Publisher</title>
+    <title>Micron Page Studio - Reticulum & NomadNet</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -40,12 +40,11 @@
         }
 
         .brand { display: flex; align-items: center; gap: 10px; }
-        .brand-icon { font-size: 22px; }
         .brand-title { font-size: 17px; font-weight: 700; color: var(--accent-color); }
-        .badge-location { background-color: #eab308; color: #0f172a; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 700; }
+        .badge-location { background-color: #334155; color: #f8fafc; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; }
 
-        .tabs { display: flex; gap: 6px; background: #0f172a; padding: 4px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; }
+        .tabs { display: flex; gap: 6px; background: #0f172a; padding: 4px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; }
         .tab-btn.active { background: var(--accent-color); color: #0f172a; }
 
         .actions { display: flex; gap: 10px; }
@@ -62,17 +61,17 @@
         textarea#editor { flex: 1; background-color: #090d16; color: #e2e8f0; font-family: var(--font-mono); font-size: 14px; padding: 16px; border: none; resize: none; outline: none; line-height: 1.6; }
 
         .preview-area { flex: 1; padding: 20px; overflow-y: auto; background-color: #0f172a; }
-        .micron-rendered { font-size: 14px; line-height: 1.6; max-width: 680px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 10px; border: 1px solid #334155; }
+        .micron-rendered { font-size: 14px; line-height: 1.6; max-width: 680px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 8px; border: 1px solid #334155; }
         .micron-rendered h1 { font-size: 22px; color: #38bdf8; border-bottom: 1px solid #334155; padding-bottom: 6px; margin-bottom: 14px; }
         .micron-rendered h2 { font-size: 18px; color: #f472b6; margin-top: 16px; margin-bottom: 10px; }
         .micron-rendered h3 { font-size: 15px; color: #4ade80; margin-top: 14px; margin-bottom: 6px; }
         .micron-rendered p { margin-bottom: 10px; color: #cbd5e1; }
-        .micron-rendered blockquote { border-left: 4px solid #38bdf8; background-color: #0f172a; padding: 10px 14px; margin: 12px 0; border-radius: 0 6px 6px 0; font-style: italic; color: #94a3b8; }
+        .micron-rendered blockquote { border-left: 4px solid #38bdf8; background-color: #0f172a; padding: 10px 14px; margin: 12px 0; border-radius: 0 4px 4px 0; font-style: italic; color: #94a3b8; }
         .micron-rendered ul, .micron-rendered ol { margin-left: 20px; margin-bottom: 14px; }
         .micron-rendered code { background-color: #0f172a; color: #f43f5e; padding: 2px 5px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; }
         .micron-rendered pre { background-color: #090d16; padding: 12px; border-radius: 6px; overflow-x: auto; margin-bottom: 14px; border: 1px solid #334155; }
         .micron-rendered pre code { background: none; color: #38bdf8; }
-        .micron-btn { display: inline-block; background-color: #0284c7; color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-weight: 600; font-size: 12px; margin: 6px 0; border: none; }
+        .micron-btn { display: inline-block; background-color: #0284c7; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 12px; margin: 6px 0; border: none; }
         .micron-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
         .micron-table th, .micron-table td { border: 1px solid #334155; padding: 6px 10px; text-align: left; }
         .micron-table th { background-color: #0f172a; color: #38bdf8; }
@@ -80,27 +79,26 @@
         .status-bar { background-color: #090d16; border-top: 1px solid var(--border-color); padding: 6px 16px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; }
         .status-online { color: #4ade80; display: flex; align-items: center; gap: 6px; }
         .dot { width: 8px; height: 8px; background-color: #4ade80; border-radius: 50%; }
-        #toast { position: fixed; bottom: 40px; right: 20px; background: #22c55e; color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.4); z-index: 999; }
+        #toast { position: fixed; bottom: 40px; right: 20px; background: #22c55e; color: white; padding: 12px 20px; border-radius: 6px; font-weight: 600; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.4); z-index: 999; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="brand">
-            <span class="brand-icon">📻</span>
             <span class="brand-title">Micron Page Studio</span>
-            <span class="badge-location">📍 Çınarcık RNode</span>
+            <span class="badge-location">Çınarcık Node</span>
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchPage('index.mu')">🏠 Ana Sayfa (index.mu)</button>
-            <button class="tab-btn" onclick="switchPage('about.mu')">👤 Hakkımda (about.mu)</button>
-            <button class="tab-btn" onclick="switchPage('hamradio.mu')">📻 Amatör Telsiz (hamradio.mu)</button>
-            <button class="tab-btn" onclick="switchPage('survival.mu')">🚑 Hayatta Kalma (survival.mu)</button>
+            <button class="tab-btn active" onclick="switchPage('index.mu')">Ana Sayfa (index.mu)</button>
+            <button class="tab-btn" onclick="switchPage('about.mu')">Hakkımda (about.mu)</button>
+            <button class="tab-btn" onclick="switchPage('hamradio.mu')">Amatör Telsiz (hamradio.mu)</button>
+            <button class="tab-btn" onclick="switchPage('survival.mu')">Hayatta Kalma (survival.mu)</button>
         </div>
 
         <div class="actions">
-            <button class="btn-publish" onclick="publishActivePage()">🚀 Çınarcık Ağında Yayınla</button>
+            <button class="btn-publish" onclick="publishActivePage()">Çınarcık Ağında Yayınla</button>
         </div>
     </header>
 
@@ -127,7 +125,7 @@
     <div class="status-bar">
         <div class="status-online">
             <div class="dot"></div>
-            <span>Çınarcık RNode (433.325 MHz LoRa) Mesh Yayın Sunucusu</span>
+            <span>Çınarcık RNode (433.325 MHz) Mesh Yayın Sunucusu</span>
         </div>
         <div id="byteStats">Boyut: 0 bytes</div>
     </div>
@@ -136,16 +134,16 @@
 
     <script>
         const pagesData = {
-            "index.mu": `# 📻 Çınarcık Mesh Düğümü - Ana Sayfa
+            "index.mu": `# Çınarcık Mesh Düğümü - Ana Sayfa
 
 > **Hoş Geldiniz!** Bu sayfa Çınarcık / Yalova RNode LoRa Mesh ağı üzerinden 433.325 MHz frekansında 7/24 yayın yapmaktadır.
 
-## 📌 Sayfa Menüsü
+## Sayfa Menüsü
 Aşağıdaki bağlantılara tıklayarak sayfalar arasında gezinebilirsiniz:
 
-* [1. 👤 Hakkımda ve Düğüm Bilgileri](page://about.mu)
-* [2. 📻 Amatör Telsizcilik & Frekans Rehberi](page://hamradio.mu)
-* [3. 🚑 Acil Durum & Hayatta Kalma Rehberi](page://survival.mu)
+* [1. Hakkımda ve Düğüm Bilgileri](page://about.mu)
+* [2. Amatör Telsizcilik & Frekans Rehberi](page://hamradio.mu)
+* [3. Acil Durum & Hayatta Kalma Rehberi](page://survival.mu)
 
 ---
 \`\`\`
@@ -153,16 +151,16 @@ Düğüm Konumu: Çınarcık / Yalova (24/7 Kesintisiz)
 Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 \`\`\``,
 
-            "about.mu": `# 👤 Hakkımda & Çınarcık Düğüm Bilgileri
+            "about.mu": `# Hakkımda & Çınarcık Düğüm Bilgileri
 
 > **Amatör Telsiz & Off-Grid Çınarcık İletişim İstasyonu**
 
-## 📍 QTH ve Konum Bilgileri
+## QTH ve Konum Bilgileri
 * **Bölge:** Yalova / Çınarcık
 * **Düğüm Kimliği:** RNode-Cinarcik-Server
 * **Amaç:** Marmara ve Çınarcık bölgesinde afet durumlarında şebekesiz kesintisiz haberleşme sağlamak.
 
-## 📡 Donanım Detayları
+## Donanım Detayları
 
 | Donanım | Özellik |
 | :--- | :--- |
@@ -170,13 +168,13 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 | **RTM / RNode** | ESP32 + SX1278 (433.325 MHz) |
 | **Anten** | 3m UHF/VHF Yüksek Kazançlı Anten |
 
-[⬅️ Ana Sayfaya Dön](page://index.mu)`,
+[Ana Sayfaya Dön](page://index.mu)`,
 
-            "hamradio.mu": `# 📻 Amatör Telsizcilik & Frekans Rehberi
+            "hamradio.mu": `# Amatör Telsizcilik & Frekans Rehberi
 
 > **"Amatör Telsizcilik, Afet Anında Tek Kesintisiz İletişim Hattıdır."**
 
-## 🌐 Çınarcık LoRa RNode Ağ Parametreleri
+## Çınarcık LoRa RNode Ağ Parametreleri
 
 * **Çalışma Frekansı:** 433.325 MHz (ISM Bandı)
 * **Spreading Factor (SF):** SF9
@@ -184,7 +182,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 * **Coding Rate (CR):** 4/5
 * **Yayın Gücü (TX Power):** 14 dBm (25 mW)
 
-## 📊 Sık Kullanılan Q-Kodları
+## Sık Kullanılan Q-Kodları
 
 | Kod | Anlamı |
 | :--- | :--- |
@@ -192,21 +190,21 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 | **QSO** | Birebir telsiz görüşmesi yapma |
 | **QRM** | İnsan kaynaklı parazit / gürültü |
 
-[⬅️ Ana Sayfaya Dön](page://index.mu)`,
+[Ana Sayfaya Dön](page://index.mu)`,
 
-            "survival.mu": `# 🚑 Acil Durum & Hayatta Kalma Rehberi
+            "survival.mu": `# Acil Durum & Hayatta Kalma Rehberi
 
-> **⚠️ İnternet veya GSM Kesildiğinde Uygulanacak Adımlar**
+> **İnternet veya GSM Kesildiğinde Uygulanacak Adımlar**
 
-## 1. 💧 Su Arıtma ve Hijyen
+## 1. Su Arıtma ve Hijyen
 * **Kaynatma:** Suyu en az 3 dakika boyunca fokurdayacak şekilde kaynatın.
 
-## 2. 🎒 Acil Durum Çantası Kontrol Listesi
+## 2. Acil Durum Çantası Kontrol Listesi
 - [x] RNode LoRa Telsiz Cihazı & Powerbank
 - [x] Düdük ve El Feneri
 - [x] İlk Yardım Çantası & İlaçlar
 
-[⬅️ Ana Sayfaya Dön](page://index.mu)`
+[Ana Sayfaya Dön](page://index.mu)`
         };
 
         let currentFilename = "index.mu";
@@ -265,7 +263,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 
             const bytes = new Blob([content]).size;
             charCount.innerText = `${content.length} Karakter`;
-            byteStats.innerText = `Boyut: ${bytes} bytes (LoRa Dostu)`;
+            byteStats.innerText = `Boyut: ${bytes} bytes`;
         }
 
         function switchPage(filename) {
@@ -291,12 +289,12 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
                 const result = await response.json();
 
                 if (response.ok) {
-                    showToast(`🚀 '${currentFilename}' Çınarcık RNode LoRa ağında başarıyla yayınlandı!`);
+                    showToast(`'${currentFilename}' Çınarcık RNode ağında başarıyla yayınlandı!`);
                 } else {
-                    showToast(`❌ Hata: ${result.message}`);
+                    showToast(`Hata: ${result.message}`);
                 }
             } catch (err) {
-                showToast(`🚀 '${currentFilename}' yerel klasöre kaydedildi ve RNode yayın kuyruğuna alındı!`);
+                showToast(`'${currentFilename}' yerel klasöre kaydedildi ve RNode yayın kuyruğına alındı!`);
             }
         }
 
