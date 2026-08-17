@@ -5,10 +5,15 @@ import socketserver
 import json
 import os
 
+try:
+    from RNS.Utilities.rngit.util import MarkdownToMicron
+    HAS_CONVERTER = True
+except Exception:
+    HAS_CONVERTER = False
+
 PORT = 8080
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
-# Try .nomadnetwork first, then .nomadnet
 NOMADNET_PAGES_DIR = os.path.expanduser("~/.nomadnetwork/storage/pages")
 if not os.path.exists(os.path.expanduser("~/.nomadnetwork")):
     NOMADNET_PAGES_DIR = os.path.expanduser("~/.nomadnet/storage/pages")
@@ -33,21 +38,26 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
                 if not filename.endswith('.mu'):
                     filename += '.mu'
 
+                if HAS_CONVERTER:
+                    final_content = str(MarkdownToMicron(content))
+                else:
+                    final_content = content
+
                 os.makedirs(NOMADNET_PAGES_DIR, exist_ok=True)
                 target_path = os.path.join(NOMADNET_PAGES_DIR, filename)
 
                 with open(target_path, 'w', encoding='utf-8') as f:
-                    f.write(content)
+                    f.write(final_content)
 
-                # Copy to both locations for safety
+                # Mirror save to both directories
                 alt_dir = os.path.expanduser("~/.nomadnet/storage/pages")
                 os.makedirs(alt_dir, exist_ok=True)
                 with open(os.path.join(alt_dir, filename), 'w', encoding='utf-8') as f:
-                    f.write(content)
+                    f.write(final_content)
 
                 response = {
                     "status": "success",
-                    "message": f"'{filename}' dosyasi {target_path} klasorune kaydedildi!",
+                    "message": f"'{filename}' dosyasi derlenip {target_path} klasorune kaydedildi!",
                     "path": target_path
                 }
                 self.send_response(200)
@@ -79,7 +89,7 @@ if __name__ == "__main__":
 
     if httpd:
         print(f"==================================================")
-        print(f"Safe Micron Page Publisher (NomadNet)")
+        print(f"Safe Micron Page Publisher & Compiler (NomadNet)")
         print(f"==================================================")
         print(f"Web Editor: http://localhost:{server_port}")
         print(f"Yerel Ag Erisimi: http://0.0.0.0:{server_port}")
