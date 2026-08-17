@@ -221,7 +221,7 @@
                 <div class="cheatsheet-bar">
                     <span class="cheat-item"><span class="cheat-code"># Başlık</span> Ana Başlık</span>
                     <span class="cheat-item"><span class="cheat-code">## Alt Başlık</span> Alt Başlık</span>
-                    <span class="cheat-item"><span class="cheat-code">[Buton](page://about.mu)</span> Sayfa Bağlantısı</span>
+                    <span class="cheat-item"><span class="cheat-code">[Buton](about.mu)</span> Sayfa Bağlantısı</span>
                     <span class="cheat-item"><span class="cheat-code">&gt; Metin</span> Alıntı / Uyarı</span>
                     <span class="cheat-item"><span class="cheat-code">| A | B |</span> Tablo</span>
                     <span class="cheat-item"><span class="cheat-code">**Kalın**</span> Vurgu</span>
@@ -277,9 +277,9 @@
 ## Sayfa Menüsü
 Aşağıdaki bağlantılara tıklayarak sayfalar arasında gezinebilirsiniz:
 
-[1. Hakkımda ve Düğüm Bilgileri](page://about.mu)
-[2. Amatör Telsizcilik & Frekans Rehberi](page://hamradio.mu)
-[3. Acil Durum & Hayatta Kalma Rehberi](page://survival.mu)
+[1. Hakkımda ve Düğüm Bilgileri](about.mu)
+[2. Amatör Telsizcilik & Frekans Rehberi](hamradio.mu)
+[3. Acil Durum & Hayatta Kalma Rehberi](survival.mu)
 
 ---
 \`\`\`
@@ -305,7 +305,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 | **RTM / RNode** | ESP32 + SX1278 (433.325 MHz) |
 | **Anten** | 3m UHF/VHF Yüksek Kazançlı Anten |
 
-[Ana Sayfaya Dön](page://index.mu)`,
+[Ana Sayfaya Dön](index.mu)`,
 
             "hamradio.mu": `# Amatör Telsizcilik & Frekans Rehberi
 
@@ -327,7 +327,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 | **QSO** | Birebir telsiz görüşmesi yapma |
 | **QRM** | İnsan kaynaklı parazit / gürültü |
 
-[Ana Sayfaya Dön](page://index.mu)`,
+[Ana Sayfaya Dön](index.mu)`,
 
             "survival.mu": `# Acil Durum & Hayatta Kalma Rehberi
 
@@ -341,7 +341,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 - [x] Düdük ve El Feneri
 - [x] İlk Yardım Çantası & İlaçlar
 
-[Ana Sayfaya Dön](page://index.mu)`
+[Ana Sayfaya Dön](index.mu)`
         };
 
         let currentFilename = "index.mu";
@@ -378,7 +378,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
                 return;
             }
 
-            pagesData[name] = `# ${name.replace('.mu', '').toUpperCase()} Sayfası\n\n> Bu sayfa yeni oluşturuldu.\n\n[Ana Sayfaya Dön](page://index.mu)`;
+            pagesData[name] = `# ${name.replace('.mu', '').toUpperCase()} Sayfası\n\n> Bu sayfa yeni oluşturuldu.\n\n[Ana Sayfaya Dön](index.mu)`;
             switchPage(name);
         }
 
