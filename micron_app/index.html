@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Micron Page Studio - Reticulum & NomadNet</title>
+    <title>Micron Page Studio - Reticulum & NomadNet TUI</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --panel-bg: #1e293b;
-            --border-color: #334155;
+            --bg-color: #0c0d10;
+            --panel-bg: #14161d;
+            --border-color: #272a37;
             --accent-color: #38bdf8;
             --accent-hover: #0284c7;
             --success-color: #22c55e;
             --success-hover: #16a34a;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --font-mono: 'Fira Code', 'Consolas', monospace;
+            --font-mono: 'Fira Code', 'Consolas', 'Courier New', monospace;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,7 +23,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: var(--font-mono);
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -40,15 +40,15 @@
         }
 
         .brand { display: flex; align-items: center; gap: 10px; }
-        .brand-title { font-size: 17px; font-weight: 700; color: var(--accent-color); }
-        .badge-location { background-color: #334155; color: #f8fafc; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; }
+        .brand-title { font-size: 15px; font-weight: 700; color: var(--accent-color); letter-spacing: 0.5px; }
+        .badge-location { background-color: #272a37; color: #f8fafc; font-size: 11px; padding: 3px 8px; border-radius: 2px; font-weight: 600; }
 
-        .tabs { display: flex; gap: 6px; background: #0f172a; padding: 4px; border-radius: 6px; border: 1px solid var(--border-color); }
-        .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; }
-        .tab-btn.active { background: var(--accent-color); color: #0f172a; }
+        .tabs { display: flex; gap: 4px; background: #0c0d10; padding: 3px; border-radius: 4px; border: 1px solid var(--border-color); }
+        .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 6px 12px; font-size: 11px; font-weight: 600; font-family: var(--font-mono); cursor: pointer; }
+        .tab-btn.active { background: var(--accent-color); color: #0c0d10; }
 
         .actions { display: flex; gap: 10px; }
-        button { background-color: var(--accent-color); color: #0f172a; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+        button { background-color: var(--accent-color); color: #0c0d10; border: none; padding: 8px 14px; font-family: var(--font-mono); font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s ease; border-radius: 2px; }
         button:hover { background-color: var(--accent-hover); color: white; }
         button.btn-publish { background-color: var(--success-color); color: white; }
         button.btn-publish:hover { background-color: var(--success-hover); }
@@ -57,29 +57,114 @@
         .pane { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--border-color); overflow: hidden; }
         .pane:last-child { border-right: none; }
 
-        .pane-header { background-color: #1e293b; padding: 8px 16px; font-size: 12px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; }
-        textarea#editor { flex: 1; background-color: #090d16; color: #e2e8f0; font-family: var(--font-mono); font-size: 14px; padding: 16px; border: none; resize: none; outline: none; line-height: 1.6; }
+        .pane-header { background-color: #14161d; padding: 8px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; font-family: var(--font-mono); }
+        textarea#editor { flex: 1; background-color: #050608; color: #4ade80; font-family: var(--font-mono); font-size: 13px; padding: 16px; border: none; resize: none; outline: none; line-height: 1.6; }
 
-        .preview-area { flex: 1; padding: 20px; overflow-y: auto; background-color: #0f172a; }
-        .micron-rendered { font-size: 14px; line-height: 1.6; max-width: 680px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 8px; border: 1px solid #334155; }
-        .micron-rendered h1 { font-size: 22px; color: #38bdf8; border-bottom: 1px solid #334155; padding-bottom: 6px; margin-bottom: 14px; }
-        .micron-rendered h2 { font-size: 18px; color: #f472b6; margin-top: 16px; margin-bottom: 10px; }
-        .micron-rendered h3 { font-size: 15px; color: #4ade80; margin-top: 14px; margin-bottom: 6px; }
-        .micron-rendered p { margin-bottom: 10px; color: #cbd5e1; }
-        .micron-rendered blockquote { border-left: 4px solid #38bdf8; background-color: #0f172a; padding: 10px 14px; margin: 12px 0; border-radius: 0 4px 4px 0; font-style: italic; color: #94a3b8; }
-        .micron-rendered ul, .micron-rendered ol { margin-left: 20px; margin-bottom: 14px; }
-        .micron-rendered code { background-color: #0f172a; color: #f43f5e; padding: 2px 5px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; }
-        .micron-rendered pre { background-color: #090d16; padding: 12px; border-radius: 6px; overflow-x: auto; margin-bottom: 14px; border: 1px solid #334155; }
-        .micron-rendered pre code { background: none; color: #38bdf8; }
-        .micron-btn { display: inline-block; background-color: #0284c7; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 12px; margin: 6px 0; border: none; }
-        .micron-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
-        .micron-table th, .micron-table td { border: 1px solid #334155; padding: 6px 10px; text-align: left; }
-        .micron-table th { background-color: #0f172a; color: #38bdf8; }
+        /* NOMADNET TERMINAL UI (TUI) SIMULATION */
+        .preview-area { flex: 1; padding: 16px; overflow-y: auto; background-color: #000000; display: flex; justify-content: center; }
 
-        .status-bar { background-color: #090d16; border-top: 1px solid var(--border-color); padding: 6px 16px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; }
+        .nomadnet-tui-window {
+            width: 100%;
+            max-width: 760px;
+            background-color: #050505;
+            border: 1px solid #333333;
+            border-radius: 2px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.5;
+            color: #d1d5db;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tui-menu-bar {
+            background-color: #1a1a1a;
+            color: #9ca3af;
+            padding: 4px 10px;
+            font-size: 11px;
+            border-bottom: 1px solid #333333;
+            display: flex;
+            gap: 12px;
+        }
+
+        .tui-menu-item { color: #d1d5db; }
+        .tui-menu-item.active { background-color: #0284c7; color: #ffffff; padding: 0 4px; font-weight: bold; }
+
+        .tui-sub-header {
+            background-color: #111111;
+            color: #6b7280;
+            padding: 4px 12px;
+            font-size: 11px;
+            border-bottom: 1px solid #222222;
+        }
+
+        .tui-content {
+            padding: 16px;
+            flex: 1;
+        }
+
+        /* Micron TUI Elements */
+        .tui-h1 { color: #38bdf8; font-weight: bold; margin-bottom: 12px; font-size: 15px; }
+        .tui-h2 { color: #f472b6; font-weight: bold; margin-top: 14px; margin-bottom: 8px; font-size: 13px; }
+        .tui-h3 { color: #4ade80; font-weight: bold; margin-top: 10px; margin-bottom: 6px; font-size: 13px; }
+
+        .tui-p { margin-bottom: 10px; color: #d1d5db; }
+
+        .tui-quote { border-left: 2px solid #38bdf8; padding-left: 10px; color: #9ca3af; margin: 10px 0; font-style: italic; }
+
+        .tui-link-btn {
+            display: block;
+            background-color: #0284c7;
+            color: #ffffff;
+            padding: 3px 8px;
+            margin: 4px 0;
+            text-decoration: none;
+            width: fit-content;
+            font-weight: bold;
+            border-radius: 1px;
+        }
+
+        .tui-link-btn:hover { background-color: #0369a1; }
+
+        .tui-table {
+            border-collapse: collapse;
+            margin: 12px 0;
+            width: 100%;
+            font-size: 12px;
+        }
+
+        .tui-table th, .tui-table td {
+            border: 1px solid #444444;
+            padding: 4px 8px;
+            text-align: left;
+        }
+
+        .tui-table th { background-color: #181818; color: #38bdf8; }
+
+        .tui-code-block {
+            background-color: #0d0d0d;
+            border: 1px solid #222222;
+            padding: 8px 12px;
+            color: #4ade80;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+
+        .tui-footer {
+            background-color: #111111;
+            border-top: 1px solid #222222;
+            padding: 4px 12px;
+            font-size: 11px;
+            color: #6b7280;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-bar { background-color: #050608; border-top: 1px solid var(--border-color); padding: 6px 16px; font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; font-family: var(--font-mono); }
         .status-online { color: #4ade80; display: flex; align-items: center; gap: 6px; }
-        .dot { width: 8px; height: 8px; background-color: #4ade80; border-radius: 50%; }
-        #toast { position: fixed; bottom: 40px; right: 20px; background: #22c55e; color: white; padding: 12px 20px; border-radius: 6px; font-weight: 600; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.4); z-index: 999; }
+        .dot { width: 6px; height: 6px; background-color: #4ade80; border-radius: 50%; }
+        #toast { position: fixed; bottom: 30px; right: 20px; background: #22c55e; color: white; padding: 10px 16px; font-size: 12px; font-family: var(--font-mono); font-weight: 700; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 999; }
     </style>
 </head>
 <body>
@@ -113,11 +198,29 @@
 
         <div class="pane">
             <div class="pane-header">
-                <span>NOMADNET EKRAN ÖNİZLEMESİ</span>
-                <span>LXMF Micron Format</span>
+                <span>NOMADNET TERMINAL (TUI) EKRAN SİMÜLASYONU</span>
+                <span>LXMF Micron Render</span>
             </div>
             <div class="preview-area">
-                <div id="preview" class="micron-rendered"></div>
+                <div class="nomadnet-tui-window">
+                    <div class="tui-menu-bar">
+                        <span class="tui-menu-item">[ Conversations ]</span>
+                        <span class="tui-menu-item active">[ Network ]</span>
+                        <span class="tui-menu-item">[ Channels ]</span>
+                        <span class="tui-menu-item">[ Log ]</span>
+                        <span class="tui-menu-item">[ Interfaces ]</span>
+                        <span class="tui-menu-item">[ Config ]</span>
+                        <span class="tui-menu-item">[ Quit ]</span>
+                    </div>
+                    <div class="tui-sub-header">
+                        <span>NomadNet Node Viewer &gt; Çınarcık Node &gt; <span id="tuiCurrentFile">index.mu</span></span>
+                    </div>
+                    <div class="tui-content" id="preview"></div>
+                    <div class="tui-footer">
+                        <span>[r] Refresh  [b] Back  [q] Close Page</span>
+                        <span>LXMF Micro-Format v1.0</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -136,18 +239,18 @@
         const pagesData = {
             "index.mu": `# Çınarcık Mesh Düğümü - Ana Sayfa
 
-> **Hoş Geldiniz!** Bu sayfa Çınarcık / Yalova RNode LoRa Mesh ağı üzerinden 433.325 MHz frekansında 7/24 yayın yapmaktadır.
+> **Hoş Geldiniz!** -Ben TA2LRW Hüseyin- Bu sayfa Çınarcık / Yalova RNode LoRa Mesh ağı üzerinden 433.325 MHz frekansında 7/24 yayın yapmaktadır.
 
 ## Sayfa Menüsü
 Aşağıdaki bağlantılara tıklayarak sayfalar arasında gezinebilirsiniz:
 
-* [1. Hakkımda ve Düğüm Bilgileri](page://about.mu)
-* [2. Amatör Telsizcilik & Frekans Rehberi](page://hamradio.mu)
-* [3. Acil Durum & Hayatta Kalma Rehberi](page://survival.mu)
+[ 1. Hakkımda ve Düğüm Bilgileri ](page://about.mu)
+[ 2. Amatör Telsizcilik & Frekans Rehberi ](page://hamradio.mu)
+[ 3. Acil Durum & Hayatta Kalma Rehberi ](page://survival.mu)
 
 ---
 \`\`\`
-Düğüm Konumu: Çınarcık / Yalova (24/7 Kesintisiz)
+Düğüm Konumu: KN40NP Çınarcık / Yalova (24/7 Kesintisiz)
 Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 \`\`\``,
 
@@ -156,9 +259,10 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 > **Amatör Telsiz & Off-Grid Çınarcık İletişim İstasyonu**
 
 ## QTH ve Konum Bilgileri
-* **Bölge:** Yalova / Çınarcık
+* **Çağrı Kodu:** TA2LRW
+* **Operatör:** Hüseyin
+* **Bölge:** Yalova / Çınarcık (KN40NP)
 * **Düğüm Kimliği:** RNode-Cinarcik-Server
-* **Amaç:** Marmara ve Çınarcık bölgesinde afet durumlarında şebekesiz kesintisiz haberleşme sağlamak.
 
 ## Donanım Detayları
 
@@ -168,7 +272,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 | **RTM / RNode** | ESP32 + SX1278 (433.325 MHz) |
 | **Anten** | 3m UHF/VHF Yüksek Kazançlı Anten |
 
-[Ana Sayfaya Dön](page://index.mu)`,
+[ ⬅️ Ana Sayfaya Dön ](page://index.mu)`,
 
             "hamradio.mu": `# Amatör Telsizcilik & Frekans Rehberi
 
@@ -190,7 +294,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 | **QSO** | Birebir telsiz görüşmesi yapma |
 | **QRM** | İnsan kaynaklı parazit / gürültü |
 
-[Ana Sayfaya Dön](page://index.mu)`,
+[ ⬅️ Ana Sayfaya Dön ](page://index.mu)`,
 
             "survival.mu": `# Acil Durum & Hayatta Kalma Rehberi
 
@@ -204,7 +308,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 - [x] Düdük ve El Feneri
 - [x] İlk Yardım Çantası & İlaçlar
 
-[Ana Sayfaya Dön](page://index.mu)`
+[ ⬅️ Ana Sayfaya Dön ](page://index.mu)`
         };
 
         let currentFilename = "index.mu";
@@ -214,25 +318,37 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
         const charCount = document.getElementById('charCount');
         const byteStats = document.getElementById('byteStats');
         const activeFilenameLabel = document.getElementById('activeFilename');
+        const tuiCurrentFile = document.getElementById('tuiCurrentFile');
 
-        function parseMicron(text) {
-            if (!text) return '<p style="color:#64748b;">Önizleme alanı...</p>';
+        function parseMicronToTUI(text) {
+            if (!text) return '<p class="tui-p" style="color:#6b7280;">Önizleme alanı...</p>';
 
             let html = text;
             html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            html = html.replace(/```([\s\S]*?)```/g, (m, c) => `<pre><code>${c.trim()}</code></pre>`);
-            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-            html = html.replace(/^&gt; (.*$)/gim, '<blockquote>$1</blockquote>');
-            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-            html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, l, u) => `<a href="${u}" class="micron-btn">${l}</a>`);
+            
+            // Code Blocks
+            html = html.replace(/```([\s\S]*?)```/g, (m, c) => `<div class="tui-code-block">${c.trim()}</div>`);
+            html = html.replace(/`([^`]+)`/g, '<span style="color:#4ade80;">$1</span>');
+            
+            // Headers
+            html = html.replace(/^### (.*$)/gim, '<div class="tui-h3">=== $1 ===</div>');
+            html = html.replace(/^## (.*$)/gim, '<div class="tui-h2">=== $1 ===</div>');
+            html = html.replace(/^# (.*$)/gim, '<div class="tui-h1">=== $1 ===</div>');
 
+            // Quotes
+            html = html.replace(/^&gt; (.*$)/gim, '<div class="tui-quote">| $1</div>');
+
+            // Bold & Italic
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong style="color:#ffffff;">$1</strong>');
+            html = html.replace(/\*([^*]+)\*/g, '<em style="color:#9ca3af;">$1</em>');
+
+            // TUI Bracket Buttons / Links
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, l, u) => `<a href="${u}" class="tui-link-btn">[ ${l.trim()} ]</a>`);
+
+            // Tables
             const lines = html.split('\n');
             let inTable = false;
-            let tableHTML = '<table class="micron-table"><thead>';
+            let tableHTML = '<table class="tui-table"><thead>';
             let finalLines = [];
 
             for (let line of lines) {
@@ -243,15 +359,19 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
                     if (!inTable) { inTable = true; tableHTML += '<tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>'; }
                     else { tableHTML += '<tr>' + cols.map(c => `<td>${c}</td>`).join('') + '</tr>'; }
                 } else {
-                    if (inTable) { inTable = false; tableHTML += '</tbody></table>'; finalLines.push(tableHTML); tableHTML = '<table class="micron-table"><thead>'; }
+                    if (inTable) { inTable = false; tableHTML += '</tbody></table>'; finalLines.push(tableHTML); tableHTML = '<table class="tui-table"><thead>'; }
                     finalLines.push(l);
                 }
             }
             if (inTable) { tableHTML += '</tbody></table>'; finalLines.push(tableHTML); }
 
             html = finalLines.join('\n');
-            html = html.replace(/^\s*[-*]\s+(.*$)/gim, '<ul><li>$1</li></ul>').replace(/<\/ul>\s*<ul>/g, '');
-            html = html.split('\n\n').map(p => (p.startsWith('<h') || p.startsWith('<block') || p.startsWith('<pre') || p.startsWith('<table') || p.startsWith('<ul')) ? p : `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+            html = html.replace(/^\s*[-*]\s+(.*$)/gim, '<div style="margin-left:12px; color:#d1d5db;">* $1</div>');
+            
+            html = html.split('\n\n').map(p => {
+                if (p.startsWith('<div') || p.startsWith('<table') || p.startsWith('<a')) return p;
+                return `<div class="tui-p">${p.replace(/\n/g, '<br>')}</div>`;
+            }).join('');
 
             return html;
         }
@@ -259,16 +379,17 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
         function updatePreview() {
             const content = editor.value;
             pagesData[currentFilename] = content;
-            preview.innerHTML = parseMicron(content);
+            preview.innerHTML = parseMicronToTUI(content);
 
             const bytes = new Blob([content]).size;
             charCount.innerText = `${content.length} Karakter`;
-            byteStats.innerText = `Boyut: ${bytes} bytes`;
+            byteStats.innerText = `Boyut: ${bytes} bytes (LoRa MTU Uyumlu)`;
         }
 
         function switchPage(filename) {
             currentFilename = filename;
             activeFilenameLabel.innerText = `ÇALIŞILAN DOSYA: ${filename}`;
+            tuiCurrentFile.innerText = filename;
             editor.value = pagesData[filename] || "";
             
             document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -294,7 +415,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
                     showToast(`Hata: ${result.message}`);
                 }
             } catch (err) {
-                showToast(`'${currentFilename}' yerel klasöre kaydedildi ve RNode yayın kuyruğına alındı!`);
+                showToast(`'${currentFilename}' yerel klasöre kaydedildi ve RNode yayın kuyruğuna alındı!`);
             }
         }
 
