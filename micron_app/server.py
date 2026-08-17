@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # Safe Micron File Publisher for Reticulum / NomadNet
-# This script ONLY writes .mu files to the filesystem and NEVER touches serial ports!
 import http.server
 import socketserver
 import json
@@ -8,7 +7,11 @@ import os
 
 PORT = 8080
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
-NOMADNET_PAGES_DIR = os.path.expanduser("~/.nomadnet/storage/pages")
+
+# Try .nomadnetwork first, then .nomadnet
+NOMADNET_PAGES_DIR = os.path.expanduser("~/.nomadnetwork/storage/pages")
+if not os.path.exists(os.path.expanduser("~/.nomadnetwork")):
+    NOMADNET_PAGES_DIR = os.path.expanduser("~/.nomadnet/storage/pages")
 
 class ReuseTCPServer(socketserver.TCPServer):
     allow_reuse_address = True
@@ -36,9 +39,15 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
                 with open(target_path, 'w', encoding='utf-8') as f:
                     f.write(content)
 
+                # Copy to both locations for safety
+                alt_dir = os.path.expanduser("~/.nomadnet/storage/pages")
+                os.makedirs(alt_dir, exist_ok=True)
+                with open(os.path.join(alt_dir, filename), 'w', encoding='utf-8') as f:
+                    f.write(content)
+
                 response = {
                     "status": "success",
-                    "message": f"'{filename}' dosyasi ~/.nomadnet/storage/pages/ klasorune kaydedildi!",
+                    "message": f"'{filename}' dosyasi {target_path} klasorune kaydedildi!",
                     "path": target_path
                 }
                 self.send_response(200)
