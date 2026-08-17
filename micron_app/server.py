@@ -9,6 +9,9 @@ PORT = 8080
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 NOMADNET_PAGES_DIR = os.path.expanduser("~/.nomadnet/storage/pages")
 
+class ReuseTCPServer(socketserver.TCPServer):
+    allow_reuse_address = True
+
 class MicronHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
@@ -53,17 +56,28 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     os.makedirs(NOMADNET_PAGES_DIR, exist_ok=True)
-    print(f"==================================================")
-    print(f"📻 Çınarcık RNode Micron Publisher Server (Debian)")
-    print(f"==================================================")
-    print(f"Web Editör: http://localhost:{PORT}")
-    print(f"Yerel Ağ Erişimi: http://0.0.0.0:{PORT}")
-    print(f"NomadNet Yayın Dizin: {NOMADNET_PAGES_DIR}")
-    print(f"==================================================")
     
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("", PORT), MicronHandler) as httpd:
+    server_port = PORT
+    httpd = None
+    for try_port in [8080, 8088, 8090, 8888]:
+        try:
+            httpd = ReuseTCPServer(("", try_port), MicronHandler)
+            server_port = try_port
+            break
+        except OSError:
+            continue
+
+    if httpd:
+        print(f"==================================================")
+        print(f"📻 Çınarcık RNode Micron Publisher Server (Debian)")
+        print(f"==================================================")
+        print(f"Web Editör: http://localhost:{server_port}")
+        print(f"Yerel Ağ Erişimi: http://0.0.0.0:{server_port}")
+        print(f"NomadNet Yayın Dizin: {NOMADNET_PAGES_DIR}")
+        print(f"==================================================")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
             print("\nSunucu durduruldu.")
+    else:
+        print("Hata: Uygun port bulunamadı.")
