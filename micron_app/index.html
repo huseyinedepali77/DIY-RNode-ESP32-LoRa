@@ -280,12 +280,20 @@
         const tuiCurrentFile = document.getElementById('tuiCurrentFile');
         const tabsList = document.getElementById('tabsList');
 
+        function sanitizeFrontendLinks(text) {
+            if (!text) return text;
+            return text.replace(/\[\s*([^\]]+?)\s*\]\((?:\:\/page\/|\/page\/|page:\/\/)?([^)]+)\)/g, (m, l, u) => `[${l.trim()}](${u.trim()})`);
+        }
+
         async function loadServerPages() {
             try {
                 const response = await fetch('/api/pages');
                 const result = await response.json();
                 if (result.pages && Object.keys(result.pages).length > 0) {
-                    pagesData = result.pages;
+                    pagesData = {};
+                    for (let k in result.pages) {
+                        pagesData[k] = sanitizeFrontendLinks(result.pages[k]);
+                    }
                 } else {
                     initDefaultPages();
                 }
@@ -420,12 +428,15 @@
         }
 
         async function publishActivePage() {
-            const content = editor.value;
+            const cleanContent = sanitizeFrontendLinks(editor.value);
+            editor.value = cleanContent;
+            updatePreview();
+
             try {
                 const response = await fetch('/api/publish', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ filename: currentFilename, content: content })
+                    body: JSON.stringify({ filename: currentFilename, content: cleanContent })
                 });
                 const result = await response.json();
 
