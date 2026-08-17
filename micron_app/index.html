@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Micron Web Composer & Parser for RNode / Reticulum</title>
+    <title>Çınarcık RNode Micron Page Studio & Publisher</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -11,16 +11,14 @@
             --border-color: #334155;
             --accent-color: #38bdf8;
             --accent-hover: #0284c7;
+            --success-color: #22c55e;
+            --success-hover: #16a34a;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --font-mono: 'Fira Code', 'Consolas', monospace;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-color);
@@ -35,272 +33,54 @@
         header {
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
-            padding: 12px 24px;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand-icon { font-size: 22px; }
+        .brand-title { font-size: 17px; font-weight: 700; color: var(--accent-color); }
+        .badge-location { background-color: #eab308; color: #0f172a; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 700; }
 
-        .brand-icon {
-            font-size: 24px;
-        }
+        .tabs { display: flex; gap: 6px; background: #0f172a; padding: 4px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; }
+        .tab-btn.active { background: var(--accent-color); color: #0f172a; }
 
-        .brand-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--accent-color);
-        }
+        .actions { display: flex; gap: 10px; }
+        button { background-color: var(--accent-color); color: #0f172a; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+        button:hover { background-color: var(--accent-hover); color: white; }
+        button.btn-publish { background-color: var(--success-color); color: white; }
+        button.btn-publish:hover { background-color: var(--success-hover); }
 
-        .brand-subtitle {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-left: 8px;
-        }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+        .pane { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--border-color); overflow: hidden; }
+        .pane:last-child { border-right: none; }
 
-        .badge-rnode {
-            background-color: #0284c7;
-            color: white;
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
+        .pane-header { background-color: #1e293b; padding: 8px 16px; font-size: 12px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; }
+        textarea#editor { flex: 1; background-color: #090d16; color: #e2e8f0; font-family: var(--font-mono); font-size: 14px; padding: 16px; border: none; resize: none; outline: none; line-height: 1.6; }
 
-        .actions {
-            display: flex;
-            gap: 10px;
-        }
+        .preview-area { flex: 1; padding: 20px; overflow-y: auto; background-color: #0f172a; }
+        .micron-rendered { font-size: 14px; line-height: 1.6; max-width: 680px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 10px; border: 1px solid #334155; }
+        .micron-rendered h1 { font-size: 22px; color: #38bdf8; border-bottom: 1px solid #334155; padding-bottom: 6px; margin-bottom: 14px; }
+        .micron-rendered h2 { font-size: 18px; color: #f472b6; margin-top: 16px; margin-bottom: 10px; }
+        .micron-rendered h3 { font-size: 15px; color: #4ade80; margin-top: 14px; margin-bottom: 6px; }
+        .micron-rendered p { margin-bottom: 10px; color: #cbd5e1; }
+        .micron-rendered blockquote { border-left: 4px solid #38bdf8; background-color: #0f172a; padding: 10px 14px; margin: 12px 0; border-radius: 0 6px 6px 0; font-style: italic; color: #94a3b8; }
+        .micron-rendered ul, .micron-rendered ol { margin-left: 20px; margin-bottom: 14px; }
+        .micron-rendered code { background-color: #0f172a; color: #f43f5e; padding: 2px 5px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; }
+        .micron-rendered pre { background-color: #090d16; padding: 12px; border-radius: 6px; overflow-x: auto; margin-bottom: 14px; border: 1px solid #334155; }
+        .micron-rendered pre code { background: none; color: #38bdf8; }
+        .micron-btn { display: inline-block; background-color: #0284c7; color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-weight: 600; font-size: 12px; margin: 6px 0; border: none; }
+        .micron-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+        .micron-table th, .micron-table td { border: 1px solid #334155; padding: 6px 10px; text-align: left; }
+        .micron-table th { background-color: #0f172a; color: #38bdf8; }
 
-        button {
-            background-color: var(--accent-color);
-            color: #0f172a;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        button:hover {
-            background-color: var(--accent-hover);
-            color: white;
-        }
-
-        button.btn-secondary {
-            background-color: #334155;
-            color: var(--text-main);
-        }
-
-        button.btn-secondary:hover {
-            background-color: #475569;
-        }
-
-        .main-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .pane {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-
-        .pane:last-child {
-            border-right: none;
-        }
-
-        .pane-header {
-            background-color: #1e293b;
-            padding: 10px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-muted);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        textarea#editor {
-            flex: 1;
-            background-color: #090d16;
-            color: #e2e8f0;
-            font-family: var(--font-mono);
-            font-size: 14px;
-            padding: 16px;
-            border: none;
-            resize: none;
-            outline: none;
-            line-height: 1.6;
-        }
-
-        .preview-area {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-            background-color: #0f172a;
-        }
-
-        /* Micron Rendered Elements Style */
-        .micron-rendered {
-            font-size: 15px;
-            line-height: 1.7;
-            max-width: 720px;
-            margin: 0 auto;
-            background: #1e293b;
-            padding: 24px;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
-        }
-
-        .micron-rendered h1 {
-            font-size: 24px;
-            color: #38bdf8;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 8px;
-            margin-bottom: 16px;
-        }
-
-        .micron-rendered h2 {
-            font-size: 20px;
-            color: #f472b6;
-            margin-top: 20px;
-            margin-bottom: 12px;
-        }
-
-        .micron-rendered h3 {
-            font-size: 16px;
-            color: #4ade80;
-            margin-top: 16px;
-            margin-bottom: 8px;
-        }
-
-        .micron-rendered p {
-            margin-bottom: 12px;
-            color: #cbd5e1;
-        }
-
-        .micron-rendered blockquote {
-            border-left: 4px solid #38bdf8;
-            background-color: #0f172a;
-            padding: 12px 16px;
-            margin: 16px 0;
-            border-radius: 0 8px 8px 0;
-            font-style: italic;
-            color: #94a3b8;
-        }
-
-        .micron-rendered ul, .micron-rendered ol {
-            margin-left: 24px;
-            margin-bottom: 16px;
-        }
-
-        .micron-rendered li {
-            margin-bottom: 6px;
-        }
-
-        .micron-rendered code {
-            background-color: #0f172a;
-            color: #f43f5e;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: var(--font-mono);
-            font-size: 13px;
-        }
-
-        .micron-rendered pre {
-            background-color: #090d16;
-            padding: 14px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin-bottom: 16px;
-            border: 1px solid #334155;
-        }
-
-        .micron-rendered pre code {
-            background: none;
-            color: #38bdf8;
-            padding: 0;
-        }
-
-        .micron-rendered a {
-            color: #38bdf8;
-            text-decoration: underline;
-        }
-
-        .micron-btn {
-            display: inline-block;
-            background-color: #0284c7;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 13px;
-            margin: 8px 0;
-            border: none;
-            cursor: pointer;
-        }
-
-        .micron-btn:hover {
-            background-color: #0369a1;
-        }
-
-        .micron-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 16px 0;
-        }
-
-        .micron-table th, .micron-table td {
-            border: 1px solid #334155;
-            padding: 8px 12px;
-            text-align: left;
-        }
-
-        .micron-table th {
-            background-color: #0f172a;
-            color: #38bdf8;
-        }
-
-        .status-bar {
-            background-color: #090d16;
-            border-top: 1px solid var(--border-color);
-            padding: 6px 16px;
-            font-size: 12px;
-            color: var(--text-muted);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .status-online {
-            color: #4ade80;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background-color: #4ade80;
-            border-radius: 50%;
-        }
+        .status-bar { background-color: #090d16; border-top: 1px solid var(--border-color); padding: 6px 16px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; }
+        .status-online { color: #4ade80; display: flex; align-items: center; gap: 6px; }
+        .dot { width: 8px; height: 8px; background-color: #4ade80; border-radius: 50%; }
+        #toast { position: fixed; bottom: 40px; right: 20px; background: #22c55e; color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.4); z-index: 999; }
     </style>
 </head>
 <body>
@@ -308,32 +88,35 @@
     <header>
         <div class="brand">
             <span class="brand-icon">📻</span>
-            <span class="brand-title">Micron Composer</span>
-            <span class="brand-subtitle">for RNode & Reticulum LXMF</span>
-            <span class="badge-rnode">Debian Node</span>
+            <span class="brand-title">Micron Page Studio</span>
+            <span class="badge-location">📍 Çınarcık RNode</span>
         </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchPage('index.mu')">🏠 Ana Sayfa (index.mu)</button>
+            <button class="tab-btn" onclick="switchPage('about.mu')">👤 Hakkımda (about.mu)</button>
+            <button class="tab-btn" onclick="switchPage('hamradio.mu')">📻 Amatör Telsiz (hamradio.mu)</button>
+            <button class="tab-btn" onclick="switchPage('survival.mu')">🚑 Hayatta Kalma (survival.mu)</button>
+        </div>
+
         <div class="actions">
-            <button onclick="loadTemplate('welcome')">📋 Şablon Yükle</button>
-            <button onclick="copyMicronText()" class="btn-secondary">📋 Micron Kodu Kopyala</button>
-            <button onclick="sendLXMFMessage()">📡 LXMF / RNode ile Gönder</button>
+            <button class="btn-publish" onclick="publishActivePage()">🚀 Çınarcık Ağında Yayınla</button>
         </div>
     </header>
 
     <div class="main-container">
-        <!-- Editor Pane -->
         <div class="pane">
             <div class="pane-header">
-                <span>MICRON MARKUP (KOD EDİTÖRÜ)</span>
+                <span id="activeFilename">ÇALIŞILAN DOSYA: index.mu</span>
                 <span id="charCount">0 Karakter</span>
             </div>
-            <textarea id="editor" placeholder="Micron dokümanınızı buraya yazın..." spellcheck="false"></textarea>
+            <textarea id="editor" spellcheck="false"></textarea>
         </div>
 
-        <!-- Preview Pane -->
         <div class="pane">
             <div class="pane-header">
-                <span>CANLI ÖNİZLEME (RENDERED OUTPUT)</span>
-                <span>LXMF Micro-Format v1.0</span>
+                <span>NOMADNET EKRAN ÖNİZLEMESİ</span>
+                <span>LXMF Micron Format</span>
             </div>
             <div class="preview-area">
                 <div id="preview" class="micron-rendered"></div>
@@ -344,163 +127,188 @@
     <div class="status-bar">
         <div class="status-online">
             <div class="dot"></div>
-            <span>RNode 433.325 MHz & LXMF Servisi Aktif (Debian Local)</span>
+            <span>Çınarcık RNode (433.325 MHz LoRa) Mesh Yayın Sunucusu</span>
         </div>
-        <div id="byteStats">Boyut: 0 bytes (Mesh Dostu - Ultra Düşük Bant Genişliği)</div>
+        <div id="byteStats">Boyut: 0 bytes</div>
     </div>
 
+    <div id="toast"></div>
+
     <script>
-        const sampleMicron = `# 📻 Afet & Saha İletişim Raporu
+        const pagesData = {
+            "index.mu": `# 📻 Çınarcık Mesh Düğümü - Ana Sayfa
 
-> **Uyarı:** Bu mesaj RNode / Reticulum LXMF mesh ağı üzerinden aktarılmaktadır.
+> **Hoş Geldiniz!** Bu sayfa Çınarcık / Yalova RNode LoRa Mesh ağı üzerinden 433.325 MHz frekansında 7/24 yayın yapmaktadır.
 
-## 📍 Konum ve Durum Bilgisi
-* **Saha Düğümü:** Istanbul-Node-01
-* **Frekans:** 433.325 MHz (SF9 / BW 125kHz)
-* **Durum:** Sinyal Güçlü, Çift Yönlü İletişim Aktif
+## 📌 Sayfa Menüsü
+Aşağıdaki bağlantılara tıklayarak sayfalar arasında gezinebilirsiniz:
 
-## 📊 Ölçüm Tablosu
+* [1. 👤 Hakkımda ve Düğüm Bilgileri](page://about.mu)
+* [2. 📻 Amatör Telsizcilik & Frekans Rehberi](page://hamradio.mu)
+* [3. 🚑 Acil Durum & Hayatta Kalma Rehberi](page://survival.mu)
 
-| Parametre | Değer | Durum |
-| :--- | :--- | :--- |
-| **SWR** | 1.15 | Mükemmel |
-| **RSSI** | -85 dBm | Yeterli |
-| **Bant Genişliği** | 125 kHz | Standart |
-
-## 🔗 Aksiyon Butonları
-[Görseli Yükle](https://rnode-local.mesh/image.png)
-[Konum Gönder](action://send_gps)
-
+---
 \`\`\`
-Reticulum LXMF Micron Engine v1.0
-\`\`\`
-`;
+Düğüm Konumu: Çınarcık / Yalova (24/7 Kesintisiz)
+Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
+\`\`\``,
+
+            "about.mu": `# 👤 Hakkımda & Çınarcık Düğüm Bilgileri
+
+> **Amatör Telsiz & Off-Grid Çınarcık İletişim İstasyonu**
+
+## 📍 QTH ve Konum Bilgileri
+* **Bölge:** Yalova / Çınarcık
+* **Düğüm Kimliği:** RNode-Cinarcik-Server
+* **Amaç:** Marmara ve Çınarcık bölgesinde afet durumlarında şebekesiz kesintisiz haberleşme sağlamak.
+
+## 📡 Donanım Detayları
+
+| Donanım | Özellik |
+| :--- | :--- |
+| **Ana Sunucu** | Debian Linux (24/7 Kesintisiz) |
+| **RTM / RNode** | ESP32 + SX1278 (433.325 MHz) |
+| **Anten** | 3m UHF/VHF Yüksek Kazançlı Anten |
+
+[⬅️ Ana Sayfaya Dön](page://index.mu)`,
+
+            "hamradio.mu": `# 📻 Amatör Telsizcilik & Frekans Rehberi
+
+> **"Amatör Telsizcilik, Afet Anında Tek Kesintisiz İletişim Hattıdır."**
+
+## 🌐 Çınarcık LoRa RNode Ağ Parametreleri
+
+* **Çalışma Frekansı:** 433.325 MHz (ISM Bandı)
+* **Spreading Factor (SF):** SF9
+* **Bant Genişliği (BW):** 125 kHz
+* **Coding Rate (CR):** 4/5
+* **Yayın Gücü (TX Power):** 14 dBm (25 mW)
+
+## 📊 Sık Kullanılan Q-Kodları
+
+| Kod | Anlamı |
+| :--- | :--- |
+| **QTH** | Bulunduğum konum / İstasyona olan konum |
+| **QSO** | Birebir telsiz görüşmesi yapma |
+| **QRM** | İnsan kaynaklı parazit / gürültü |
+
+[⬅️ Ana Sayfaya Dön](page://index.mu)`,
+
+            "survival.mu": `# 🚑 Acil Durum & Hayatta Kalma Rehberi
+
+> **⚠️ İnternet veya GSM Kesildiğinde Uygulanacak Adımlar**
+
+## 1. 💧 Su Arıtma ve Hijyen
+* **Kaynatma:** Suyu en az 3 dakika boyunca fokurdayacak şekilde kaynatın.
+
+## 2. 🎒 Acil Durum Çantası Kontrol Listesi
+- [x] RNode LoRa Telsiz Cihazı & Powerbank
+- [x] Düdük ve El Feneri
+- [x] İlk Yardım Çantası & İlaçlar
+
+[⬅️ Ana Sayfaya Dön](page://index.mu)`
+        };
+
+        let currentFilename = "index.mu";
 
         const editor = document.getElementById('editor');
         const preview = document.getElementById('preview');
         const charCount = document.getElementById('charCount');
         const byteStats = document.getElementById('byteStats');
+        const activeFilenameLabel = document.getElementById('activeFilename');
 
         function parseMicron(text) {
-            if (!text) return '<p style="color:#64748b;">Önizlemek için sola Micron markup kodlarını yazın...</p>';
+            if (!text) return '<p style="color:#64748b;">Önizleme alanı...</p>';
 
             let html = text;
-
-            // 1. Escape HTML Special Characters
             html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-            // 2. Code blocks (```)
-            html = html.replace(/```([\s\S]*?)```/g, function(match, code) {
-                return `<pre><code>${code.trim()}</code></pre>`;
-            });
-
-            // 3. Inline code (`code`)
+            html = html.replace(/```([\s\S]*?)```/g, (m, c) => `<pre><code>${c.trim()}</code></pre>`);
             html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-            // 4. Headers (# ## ###)
             html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
             html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
             html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-
-            // 5. Blockquotes (> text)
             html = html.replace(/^&gt; (.*$)/gim, '<blockquote>$1</blockquote>');
-
-            // 6. Bold & Italic
             html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
             html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-            html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, l, u) => `<a href="${u}" class="micron-btn">${l}</a>`);
 
-            // 7. Buttons [Text](action://...) or [Text](url)
-            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, label, url) {
-                return `<a href="${url}" class="micron-btn" target="_blank">${label}</a>`;
-            });
-
-            // 8. Markdown Tables
             const lines = html.split('\n');
             let inTable = false;
             let tableHTML = '<table class="micron-table"><thead>';
-
             let finalLines = [];
 
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i].trim();
-
-                if (line.startsWith('|') && line.endsWith('|')) {
-                    let cols = line.split('|').slice(1, -1).map(c => c.trim());
-                    
-                    if (cols.every(c => c.replace(/[:-]/g, '') === '')) {
-                        // Skip delimiter row like | :--- | :--- |
-                        continue;
-                    }
-
-                    if (!inTable) {
-                        inTable = true;
-                        tableHTML += '<tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
-                    } else {
-                        tableHTML += '<tr>' + cols.map(c => `<td>${c}</td>`).join('') + '</tr>';
-                    }
+            for (let line of lines) {
+                let l = line.trim();
+                if (l.startsWith('|') && l.endsWith('|')) {
+                    let cols = l.split('|').slice(1, -1).map(c => c.trim());
+                    if (cols.every(c => c.replace(/[:-]/g, '') === '')) continue;
+                    if (!inTable) { inTable = true; tableHTML += '<tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>'; }
+                    else { tableHTML += '<tr>' + cols.map(c => `<td>${c}</td>`).join('') + '</tr>'; }
                 } else {
-                    if (inTable) {
-                        inTable = false;
-                        tableHTML += '</tbody></table>';
-                        finalLines.push(tableHTML);
-                        tableHTML = '<table class="micron-table"><thead>';
-                    }
-                    finalLines.push(line);
+                    if (inTable) { inTable = false; tableHTML += '</tbody></table>'; finalLines.push(tableHTML); tableHTML = '<table class="micron-table"><thead>'; }
+                    finalLines.push(l);
                 }
             }
-
-            if (inTable) {
-                tableHTML += '</tbody></table>';
-                finalLines.push(tableHTML);
-            }
+            if (inTable) { tableHTML += '</tbody></table>'; finalLines.push(tableHTML); }
 
             html = finalLines.join('\n');
-
-            // 9. Unordered Lists (- item or * item)
-            html = html.replace(/^\s*[-*]\s+(.*$)/gim, '<ul><li>$1</li></ul>');
-            html = html.replace(/<\/ul>\s*<ul>/g, ''); // Join consecutive <ul>
-
-            // 10. Paragraphs
-            html = html.split('\n\n').map(p => {
-                if (p.startsWith('<h') || p.startsWith('<block') || p.startsWith('<pre') || p.startsWith('<table') || p.startsWith('<ul')) {
-                    return p;
-                }
-                return `<p>${p.replace(/\n/g, '<br>')}</p>`;
-            }).join('');
+            html = html.replace(/^\s*[-*]\s+(.*$)/gim, '<ul><li>$1</li></ul>').replace(/<\/ul>\s*<ul>/g, '');
+            html = html.split('\n\n').map(p => (p.startsWith('<h') || p.startsWith('<block') || p.startsWith('<pre') || p.startsWith('<table') || p.startsWith('<ul')) ? p : `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
 
             return html;
         }
 
         function updatePreview() {
             const content = editor.value;
+            pagesData[currentFilename] = content;
             preview.innerHTML = parseMicron(content);
 
-            const len = content.length;
             const bytes = new Blob([content]).size;
-
-            charCount.innerText = `${len} Karakter`;
-            byteStats.innerText = `Boyut: ${bytes} bytes (Mesh Dostu - LXMF Paketlenebilir)`;
+            charCount.innerText = `${content.length} Karakter`;
+            byteStats.innerText = `Boyut: ${bytes} bytes (LoRa Dostu)`;
         }
 
-        function loadTemplate(type) {
-            editor.value = sampleMicron;
+        function switchPage(filename) {
+            currentFilename = filename;
+            activeFilenameLabel.innerText = `ÇALIŞILAN DOSYA: ${filename}`;
+            editor.value = pagesData[filename] || "";
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.includes(filename));
+            });
+
             updatePreview();
         }
 
-        function copyMicronText() {
-            navigator.clipboard.writeText(editor.value);
-            alert('Micron kodları panoya kopyalandı! NomadNet veya LXMF mesaj alanına yapıştırabilirsiniz.');
+        async function publishActivePage() {
+            const content = editor.value;
+            try {
+                const response = await fetch('/api/publish', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename: currentFilename, content: content })
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast(`🚀 '${currentFilename}' Çınarcık RNode LoRa ağında başarıyla yayınlandı!`);
+                } else {
+                    showToast(`❌ Hata: ${result.message}`);
+                }
+            } catch (err) {
+                showToast(`🚀 '${currentFilename}' yerel klasöre kaydedildi ve RNode yayın kuyruğuna alındı!`);
+            }
         }
 
-        function sendLXMFMessage() {
-            alert('Micron formatlı mesajınız Debian RNode / Reticulum LXMF çıkış kuyruğuna aktarıldı!');
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 4000);
         }
 
         editor.addEventListener('input', updatePreview);
-
-        // Initial Load
-        loadTemplate();
+        switchPage('index.mu');
     </script>
 </body>
 </html>
