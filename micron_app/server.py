@@ -23,7 +23,6 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
                 filename = data.get('filename', 'index.mu')
                 content = data.get('content', '')
 
-                # Güvenlik kontrolü
                 if not filename.endswith('.mu'):
                     filename += '.mu'
 
@@ -62,6 +61,7 @@ if __name__ == "__main__":
     print(f"NomadNet Yayın Dizin: {NOMADNET_PAGES_DIR}")
     print(f"==================================================")
     
+    socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), MicronHandler) as httpd:
         try:
             httpd.serve_forever()
