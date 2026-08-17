@@ -32,9 +32,15 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 for fname in os.listdir(NOMADNET_PAGES_DIR):
                     if fname.endswith('.mu'):
-                        fpath = os.path.join(NOMADNET_PAGES_DIR, fname)
-                        with open(fpath, 'r', encoding='utf-8', errors='replace') as f:
-                            pages_data[fname] = f.read()
+                        src_path = os.path.join(NOMADNET_PAGES_DIR, fname + ".src")
+                        mu_path = os.path.join(NOMADNET_PAGES_DIR, fname)
+                        
+                        if os.path.exists(src_path):
+                            with open(src_path, 'r', encoding='utf-8', errors='replace') as f:
+                                pages_data[fname] = f.read()
+                        elif os.path.exists(mu_path):
+                            with open(mu_path, 'r', encoding='utf-8', errors='replace') as f:
+                                pages_data[fname] = f.read()
             except Exception as e:
                 pages_data = {"error": str(e)}
 
@@ -58,6 +64,11 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
                 if not filename.endswith('.mu'):
                     filename += '.mu'
 
+                # Save clean markdown source
+                src_path = os.path.join(NOMADNET_PAGES_DIR, filename + ".src")
+                with open(src_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+
                 if HAS_CONVERTER:
                     try:
                         converter = MarkdownToMicron()
@@ -78,10 +89,12 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
                 os.makedirs(alt_dir, exist_ok=True)
                 with open(os.path.join(alt_dir, filename), 'w', encoding='utf-8') as f:
                     f.write(final_content)
+                with open(os.path.join(alt_dir, filename + ".src"), 'w', encoding='utf-8') as f:
+                    f.write(content)
 
                 response = {
                     "status": "success",
-                    "message": f"'{filename}' dosyasi derlenip {target_path} klasorune kaydedildi!",
+                    "message": f"'{filename}' derlenip kaydedildi!",
                     "path": target_path
                 }
                 self.send_response(200)
@@ -104,10 +117,11 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
                 filename = data.get('filename', '')
 
                 if filename and filename != 'index.mu':
-                    p1 = os.path.join(NOMADNET_PAGES_DIR, filename)
-                    p2 = os.path.join(os.path.expanduser("~/.nomadnet/storage/pages"), filename)
-                    if os.path.exists(p1): os.remove(p1)
-                    if os.path.exists(p2): os.remove(p2)
+                    for d in [NOMADNET_PAGES_DIR, os.path.expanduser("~/.nomadnet/storage/pages")]:
+                        p1 = os.path.join(d, filename)
+                        p2 = os.path.join(d, filename + ".src")
+                        if os.path.exists(p1): os.remove(p1)
+                        if os.path.exists(p2): os.remove(p2)
 
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
