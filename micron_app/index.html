@@ -110,13 +110,14 @@
         .tui-content {
             padding: 16px;
             flex: 1;
+            white-space: pre-wrap; /* SATIR BAŞLARINI VE HER ENTER'I KORUR */
         }
 
-        .tui-h1 { color: #38bdf8; font-weight: bold; margin-bottom: 12px; font-size: 15px; }
-        .tui-h2 { color: #f472b6; font-weight: bold; margin-top: 14px; margin-bottom: 8px; font-size: 13px; }
-        .tui-h3 { color: #4ade80; font-weight: bold; margin-top: 10px; margin-bottom: 6px; font-size: 13px; }
-        .tui-p { margin-bottom: 10px; color: #d1d5db; }
-        .tui-quote { border-left: 2px solid #38bdf8; padding-left: 10px; color: #9ca3af; margin: 10px 0; font-style: italic; }
+        .tui-h1 { color: #38bdf8; font-weight: bold; margin-bottom: 8px; font-size: 15px; }
+        .tui-h2 { color: #f472b6; font-weight: bold; margin-top: 10px; margin-bottom: 6px; font-size: 13px; }
+        .tui-h3 { color: #4ade80; font-weight: bold; margin-top: 8px; margin-bottom: 4px; font-size: 13px; }
+        .tui-p { margin-bottom: 6px; color: #d1d5db; }
+        .tui-quote { border-left: 2px solid #38bdf8; padding-left: 10px; color: #9ca3af; margin: 6px 0; font-style: italic; }
 
         .tui-link-btn {
             display: block;
@@ -134,9 +135,10 @@
 
         .tui-table {
             border-collapse: collapse;
-            margin: 12px 0;
+            margin: 10px 0;
             width: 100%;
             font-size: 12px;
+            white-space: normal;
         }
 
         .tui-table th, .tui-table td {
@@ -366,25 +368,31 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
         }
 
         function parseMicronToTUI(text) {
-            if (!text) return '<p class="tui-p" style="color:#6b7280;">Önizleme alanı...</p>';
+            if (!text) return '<div class="tui-p" style="color:#6b7280;">Önizleme alanı...</div>';
 
             let html = text;
             html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             
+            // Code Blocks
             html = html.replace(/```([\s\S]*?)```/g, (m, c) => `<div class="tui-code-block">${c.trim()}</div>`);
             html = html.replace(/`([^`]+)`/g, '<span style="color:#4ade80;">$1</span>');
             
+            // Headers
             html = html.replace(/^### (.*$)/gim, '<div class="tui-h3">=== $1 ===</div>');
             html = html.replace(/^## (.*$)/gim, '<div class="tui-h2">=== $1 ===</div>');
             html = html.replace(/^# (.*$)/gim, '<div class="tui-h1">=== $1 ===</div>');
 
+            // Quotes
             html = html.replace(/^&gt; (.*$)/gim, '<div class="tui-quote">| $1</div>');
 
+            // Bold & Italic
             html = html.replace(/\*\*([^*]+)\*\*/g, '<strong style="color:#ffffff;">$1</strong>');
             html = html.replace(/\*([^*]+)\*/g, '<em style="color:#9ca3af;">$1</em>');
 
+            // TUI Bracket Buttons / Links
             html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, l, u) => `<a href="${u}" class="tui-link-btn">[ ${l.trim()} ]</a>`);
 
+            // Tables
             const lines = html.split('\n');
             let inTable = false;
             let tableHTML = '<table class="tui-table"><thead>';
@@ -406,11 +414,6 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
 
             html = finalLines.join('\n');
             html = html.replace(/^\s*[-*]\s+(.*$)/gim, '<div style="margin-left:12px; color:#d1d5db;">* $1</div>');
-            
-            html = html.split('\n\n').map(p => {
-                if (p.startsWith('<div') || p.startsWith('<table') || p.startsWith('<a')) return p;
-                return `<div class="tui-p">${p.replace(/\n/g, '<br>')}</div>`;
-            }).join('');
 
             return html;
         }
