@@ -13,6 +13,8 @@
             --accent-hover: #0284c7;
             --success-color: #22c55e;
             --success-hover: #16a34a;
+            --danger-color: #ef4444;
+            --danger-hover: #dc2626;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --font-mono: 'Fira Code', 'Consolas', 'Courier New', monospace;
@@ -33,7 +35,7 @@
         header {
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
-            padding: 10px 20px;
+            padding: 8px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -43,15 +45,21 @@
         .brand-title { font-size: 15px; font-weight: 700; color: var(--accent-color); letter-spacing: 0.5px; }
         .badge-location { background-color: #272a37; color: #f8fafc; font-size: 11px; padding: 3px 8px; border-radius: 2px; font-weight: 600; }
 
+        .tabs-container { display: flex; align-items: center; gap: 6px; overflow-x: auto; max-width: 50%; }
         .tabs { display: flex; gap: 4px; background: #0c0d10; padding: 3px; border-radius: 4px; border: 1px solid var(--border-color); }
-        .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 6px 12px; font-size: 11px; font-weight: 600; font-family: var(--font-mono); cursor: pointer; }
+        .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 5px 10px; font-size: 11px; font-weight: 600; font-family: var(--font-mono); cursor: pointer; white-space: nowrap; }
         .tab-btn.active { background: var(--accent-color); color: #0c0d10; }
 
-        .actions { display: flex; gap: 10px; }
-        button { background-color: var(--accent-color); color: #0c0d10; border: none; padding: 8px 14px; font-family: var(--font-mono); font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s ease; border-radius: 2px; }
+        .btn-add-page { background: #272a37; color: #f8fafc; border: 1px solid var(--border-color); padding: 5px 10px; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 4px; }
+        .btn-add-page:hover { background: #38bdf8; color: #0c0d10; }
+
+        .actions { display: flex; gap: 8px; }
+        button { background-color: var(--accent-color); color: #0c0d10; border: none; padding: 6px 12px; font-family: var(--font-mono); font-weight: 700; font-size: 11px; cursor: pointer; transition: all 0.2s ease; border-radius: 2px; }
         button:hover { background-color: var(--accent-hover); color: white; }
         button.btn-publish { background-color: var(--success-color); color: white; }
         button.btn-publish:hover { background-color: var(--success-hover); }
+        button.btn-delete { background-color: #272a37; color: #f87171; border: 1px solid #7f1d1d; }
+        button.btn-delete:hover { background-color: var(--danger-color); color: white; }
 
         .main-container { display: flex; flex: 1; overflow: hidden; }
         .pane { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--border-color); overflow: hidden; }
@@ -104,13 +112,10 @@
             flex: 1;
         }
 
-        /* Micron TUI Elements */
         .tui-h1 { color: #38bdf8; font-weight: bold; margin-bottom: 12px; font-size: 15px; }
         .tui-h2 { color: #f472b6; font-weight: bold; margin-top: 14px; margin-bottom: 8px; font-size: 13px; }
         .tui-h3 { color: #4ade80; font-weight: bold; margin-top: 10px; margin-bottom: 6px; font-size: 13px; }
-
         .tui-p { margin-bottom: 10px; color: #d1d5db; }
-
         .tui-quote { border-left: 2px solid #38bdf8; padding-left: 10px; color: #9ca3af; margin: 10px 0; font-style: italic; }
 
         .tui-link-btn {
@@ -175,14 +180,13 @@
             <span class="badge-location">Çınarcık Node</span>
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchPage('index.mu')">Ana Sayfa (index.mu)</button>
-            <button class="tab-btn" onclick="switchPage('about.mu')">Hakkımda (about.mu)</button>
-            <button class="tab-btn" onclick="switchPage('hamradio.mu')">Amatör Telsiz (hamradio.mu)</button>
-            <button class="tab-btn" onclick="switchPage('survival.mu')">Hayatta Kalma (survival.mu)</button>
+        <div class="tabs-container">
+            <div class="tabs" id="tabsList"></div>
+            <button class="btn-add-page" onclick="addNewPagePrompt()">+ Yeni Sayfa Ekle</button>
         </div>
 
         <div class="actions">
+            <button class="btn-delete" onclick="deleteActivePage()">Sayfayı Sil</button>
             <button class="btn-publish" onclick="publishActivePage()">Çınarcık Ağında Yayınla</button>
         </div>
     </header>
@@ -319,6 +323,47 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
         const byteStats = document.getElementById('byteStats');
         const activeFilenameLabel = document.getElementById('activeFilename');
         const tuiCurrentFile = document.getElementById('tuiCurrentFile');
+        const tabsList = document.getElementById('tabsList');
+
+        function renderTabs() {
+            tabsList.innerHTML = "";
+            Object.keys(pagesData).forEach(filename => {
+                const btn = document.createElement('button');
+                btn.className = `tab-btn ${filename === currentFilename ? 'active' : ''}`;
+                btn.innerText = filename;
+                btn.onclick = () => switchPage(filename);
+                tabsList.appendChild(btn);
+            });
+        }
+
+        function addNewPagePrompt() {
+            let name = prompt("Yeni sayfa adını girin (Örn: duyuru veya afet_raporu):");
+            if (!name) return;
+            
+            name = name.trim().toLowerCase().replace(/\s+/g, '_');
+            if (!name.endsWith('.mu')) name += '.mu';
+
+            if (pagesData[name]) {
+                alert("Bu isimde bir sayfa zaten var!");
+                switchPage(name);
+                return;
+            }
+
+            pagesData[name] = `# ${name.replace('.mu', '').toUpperCase()} Sayfası\n\n> Bu sayfa yeni oluşturuldu.\n\n[ ⬅️ Ana Sayfaya Dön ](page://index.mu)`;
+            switchPage(name);
+        }
+
+        function deleteActivePage() {
+            if (currentFilename === "index.mu") {
+                alert("Ana sayfa (index.mu) silinemez!");
+                return;
+            }
+
+            if (confirm(`'${currentFilename}' sayfasını silmek istediğinizden emin misiniz?`)) {
+                delete pagesData[currentFilename];
+                switchPage("index.mu");
+            }
+        }
 
         function parseMicronToTUI(text) {
             if (!text) return '<p class="tui-p" style="color:#6b7280;">Önizleme alanı...</p>';
@@ -326,26 +371,20 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
             let html = text;
             html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             
-            // Code Blocks
             html = html.replace(/```([\s\S]*?)```/g, (m, c) => `<div class="tui-code-block">${c.trim()}</div>`);
             html = html.replace(/`([^`]+)`/g, '<span style="color:#4ade80;">$1</span>');
             
-            // Headers
             html = html.replace(/^### (.*$)/gim, '<div class="tui-h3">=== $1 ===</div>');
             html = html.replace(/^## (.*$)/gim, '<div class="tui-h2">=== $1 ===</div>');
             html = html.replace(/^# (.*$)/gim, '<div class="tui-h1">=== $1 ===</div>');
 
-            // Quotes
             html = html.replace(/^&gt; (.*$)/gim, '<div class="tui-quote">| $1</div>');
 
-            // Bold & Italic
             html = html.replace(/\*\*([^*]+)\*\*/g, '<strong style="color:#ffffff;">$1</strong>');
             html = html.replace(/\*([^*]+)\*/g, '<em style="color:#9ca3af;">$1</em>');
 
-            // TUI Bracket Buttons / Links
             html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, l, u) => `<a href="${u}" class="tui-link-btn">[ ${l.trim()} ]</a>`);
 
-            // Tables
             const lines = html.split('\n');
             let inTable = false;
             let tableHTML = '<table class="tui-table"><thead>';
@@ -391,11 +430,7 @@ Frekans: 433.325 MHz (SF9 / BW 125 kHz / CR 4/5)
             activeFilenameLabel.innerText = `ÇALIŞILAN DOSYA: ${filename}`;
             tuiCurrentFile.innerText = filename;
             editor.value = pagesData[filename] || "";
-            
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.innerText.includes(filename));
-            });
-
+            renderTabs();
             updatePreview();
         }
 
