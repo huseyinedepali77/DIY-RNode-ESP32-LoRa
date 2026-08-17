@@ -39,7 +39,8 @@ class MicronHandler(http.server.SimpleHTTPRequestHandler):
                     filename += '.mu'
 
                 if HAS_CONVERTER:
-                    final_content = str(MarkdownToMicron(content))
+                    converter = MarkdownToMicron()
+                    final_content = converter.format_block(content)
                 else:
                     final_content = content
 
